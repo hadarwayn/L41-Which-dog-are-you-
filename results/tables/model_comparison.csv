@@ -1,0 +1,7 @@
+Model,Top-1 Acc,Top-5 Acc,Params,Train Time (s),Best Stage
+simple_cnn,0.0140,0.0699,"221,304",257.7,N/A
+alexnet,0.2657,0.5664,"57,495,480",972.8,stage3
+vgg16,—,—,"134,752,184",—,N/A
+inception,—,—,"24,681,424",—,N/A
+resnet50,0.6713,0.9580,"23,753,912",1518.1,stage3
+mobilenet,0.3566,0.6923,"2,377,592",500.4,stage2

@@ -1,0 +1,725 @@
+{
+  "project": "Dog Breed Classification & Human-to-Dog Similarity Experiment",
+  "version": "1.2",
+  "created": "2026-03-28",
+  "updated": "2026-03-28",
+  "status": "pending_approval",
+  "total_tasks": 68,
+  "execution_strategy": {
+    "environment_a": {
+      "name": "WSL Terminal (Local)",
+      "who_runs": "Claude Code (autonomous)",
+      "data": "10% stratified subset",
+      "purpose": "Code validation, preliminary results for README v1"
+    },
+    "environment_b": {
+      "name": "Google Colab (GPU)",
+      "who_runs": "User (Hadar) manually",
+      "data": "100% full dataset",
+      "colab_url": "https://colab.research.google.com/drive/1Rvgw3hEfrl53GqFkeXpQUZZYdSajRmpJ",
+      "purpose": "Full training, final results, celebrity/animal experiments",
+      "budget": "Colab Pro ($9.99-$49.99/month) for better GPU"
+    },
+    "results_flow": "WSL preliminary → README v1 → Colab full run → User pastes results → README v2 (final)"
+  },
+  "phases": [
+    {
+      "id": "P1",
+      "name": "Planning & Documentation",
+      "status": "complete",
+      "tasks": [
+        {
+          "id": "1.1",
+          "title": "Read and analyze course lecture summaries (L30-L40)",
+          "status": "done",
+          "priority": "P0"
+        },
+        {
+          "id": "1.2",
+          "title": "Create PRD.md",
+          "status": "done",
+          "priority": "P0"
+        },
+        {
+          "id": "1.3",
+          "title": "Create tasks.json",
+          "status": "done",
+          "priority": "P0"
+        },
+        {
+          "id": "1.4",
+          "title": "Get approval from user",
+          "description": "Present PRD and tasks for review. Wait for approval before proceeding",
+          "status": "pending",
+          "priority": "P0"
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Project Setup",
+      "status": "not_started",
+      "tasks": [
+        {
+          "id": "2.1",
+          "title": "Create project directory structure",
+          "description": "Set up src/ (with data/, models/, training/, inference/, experiments/, visualization/), data/, results/, notebooks/, docs/. Include all __init__.py files",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["1.4"]
+        },
+        {
+          "id": "2.2",
+          "title": "Initialize virtual environment (UV) and dependencies",
+          "description": "Create pyproject.toml and requirements.txt with: torch, torchvision, matplotlib, seaborn, pandas, numpy, scikit-learn, Pillow, kaggle, tqdm. Set up UV venv in WSL",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.1"]
+        },
+        {
+          "id": "2.3",
+          "title": "Create config.py",
+          "description": "Central configuration with: paths (WSL + Colab variants), hyperparameters, ImageNet normalization, breed count (120), image sizes (224x224, 299x299), device selection (CPU/GPU), DATA_FRACTION param (0.1 for WSL, 1.0 for Colab), random seed (42)",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.1"]
+        },
+        {
+          "id": "2.4",
+          "title": "Create .gitignore",
+          "description": "Ignore: data/raw/, data/processed/, results/models/*.pth, .venv/, __pycache__/, *.pyc, .env, kaggle.json, credentials",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.1"]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "Data Pipeline & Preparation",
+      "status": "not_started",
+      "tasks": [
+        {
+          "id": "3.1",
+          "title": "Implement dataset download script",
+          "description": "src/data/download.py — Download Dog Breed Identification dataset from Kaggle (API or manual). Handle zip extraction of train.zip and test.zip. Parse labels.csv. Works in both WSL and Colab",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.3"]
+        },
+        {
+          "id": "3.2",
+          "title": "Implement data organization script",
+          "description": "src/data/organize.py — Parse labels.csv, create breed subdirectories: data/processed/train/{breed}/ and data/processed/val/{breed}/. Stratified 80/20 split preserving breed proportions. Verify ImageFolder compatibility",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.1"]
+        },
+        {
+          "id": "3.3",
+          "title": "Implement resolution standardization",
+          "description": "Resize ALL images to uniform 224x224 using Lanczos resampling. Also create 299x299 variants for Inception. Save to processed/ folder. All images MUST be identical resolution before training. Log original vs new sizes",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.2"]
+        },
+        {
+          "id": "3.4",
+          "title": "Implement dataset analysis with visualizations",
+          "description": "src/data/analysis.py — Generate class distribution histogram (before and after balancing), compute per-breed stats (min/max/mean/median), identify underrepresented breeds (<50 samples), detect corrupted images, total stats report. Save histogram to results/graphs/class_distribution.png",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.3"]
+        },
+        {
+          "id": "3.5",
+          "title": "Implement class balancing",
+          "description": "Compute class weights (inverse frequency) for weighted CrossEntropyLoss. Implement WeightedRandomSampler. Apply heavier augmentation to underrepresented breeds. Log balance statistics before/after",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.4"]
+        },
+        {
+          "id": "3.6",
+          "title": "Implement data augmentation transforms",
+          "description": "src/data/augmentation.py — Training: RandomHorizontalFlip, RandomRotation(15), ColorJitter, RandomResizedCrop, RandomErasing. Validation: Resize+CenterCrop+Normalize only. ImageNet mean/std. Separate transform sets for 224x224 and 299x299",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.3"]
+        },
+        {
+          "id": "3.7",
+          "title": "Implement PyTorch Dataset and DataLoader",
+          "description": "src/data/dataset.py — ImageFolder-compatible, DataLoaders with batch_size/shuffle/num_workers. Support 224x224 and 299x299. DATA_FRACTION param for 10% (WSL) vs 100% (Colab). Return class_weights for loss function",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.3", "3.5", "3.6"]
+        },
+        {
+          "id": "3.8",
+          "title": "Create 10% stratified subset for WSL testing",
+          "description": "Generate data/processed/train_subset_10pct/ with stratified 10% sample. Same breed proportions. Used by Claude Code for local testing. Also create matching val_subset_10pct/",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.5"]
+        },
+        {
+          "id": "3.9",
+          "title": "Verify data pipeline end-to-end",
+          "description": "Test: download → organize → resize → analyze → balance → load batch → visualize 16 sample images with labels. Confirm: uniform resolution, balanced weights, correct labels, ≥3,000 training images. Print summary report",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.7", "3.8"]
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "Model Implementations",
+      "status": "not_started",
+      "tasks": [
+        {
+          "id": "4.1",
+          "title": "Implement Simple CNN (baseline)",
+          "description": "src/models/simple_cnn.py — Custom: 3x [Conv2D → BatchNorm → ReLU → MaxPool] → Flatten → Dense(512) → Dropout(0.5) → Dense(120, Softmax). No pretrained weights. Demonstrates core CNN building blocks",
+          "status": "not_started",
+          "priority": "P1",
+          "depends_on": ["2.3"]
+        },
+        {
+          "id": "4.2",
+          "title": "Implement AlexNet",
+          "description": "src/models/alexnet.py — torchvision.models.alexnet(pretrained=True). Replace classifier[-1] with Linear(4096, 120). Document: Conv(11x11)→Conv(5x5)→3xConv(3x3), ReLU + Dropout innovations, historical significance",
+          "status": "not_started",
+          "priority": "P1",
+          "depends_on": ["2.3"]
+        },
+        {
+          "id": "4.3",
+          "title": "Implement VGG-16",
+          "description": "src/models/vgg.py — torchvision.models.vgg16(pretrained=True). Replace classifier[-1] with Linear(4096, 120). Document: uniform 3x3 filters, 138M params, why simplicity works",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.3"]
+        },
+        {
+          "id": "4.4",
+          "title": "Implement GoogLeNet/Inception v3",
+          "description": "src/models/inception.py — torchvision.models.inception_v3(pretrained=True). Replace fc with Linear(2048, 120). Handle aux_logits. Input 299x299. Document: Inception module (parallel 1x1/3x3/5x5), 1x1 conv for dim reduction",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.3"]
+        },
+        {
+          "id": "4.5",
+          "title": "Implement ResNet-50",
+          "description": "src/models/resnet.py — torchvision.models.resnet50(pretrained=True). Replace fc with Linear(2048, 120). Document: residual blocks (1x1→3x3→1x1), skip connections, vanishing gradient solution",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.3"]
+        },
+        {
+          "id": "4.6",
+          "title": "Implement MobileNet v2",
+          "description": "src/models/mobilenet.py — torchvision.models.mobilenet_v2(pretrained=True). Replace classifier[-1] with Linear(1280, 120). Document: depthwise separable convolution, inverted residuals, mobile efficiency",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["2.3"]
+        },
+        {
+          "id": "4.7",
+          "title": "Create model factory/registry",
+          "description": "src/models/__init__.py — get_model(name, num_classes=120, pretrained=True) returns any model by name string. Standardize interface: all models accept (batch, 3, H, W) and output (batch, 120)",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["4.1", "4.2", "4.3", "4.4", "4.5", "4.6"]
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "Training & Inference Infrastructure",
+      "status": "not_started",
+      "tasks": [
+        {
+          "id": "5.1",
+          "title": "Implement training loop",
+          "description": "src/training/trainer.py — train_one_epoch(), validate(), full loop with: per-epoch metrics (acc, loss), best model checkpointing, early stopping (patience=5), ReduceLROnPlateau, training time tracking, tqdm progress. Works on CPU (WSL) and GPU (Colab)",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["4.7", "3.9"]
+        },
+        {
+          "id": "5.2",
+          "title": "Implement 3-stage transfer learning pipeline",
+          "description": "src/training/transfer_learning.py — Stage 1: freeze all, train classifier (lr=1e-3). Stage 2: unfreeze top 20-30% (lr=1e-4). Stage 3: unfreeze all (lr=1e-5). Log per-stage results. Configurable epochs. Compare stages in output table",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["5.1"]
+        },
+        {
+          "id": "5.3",
+          "title": "Implement evaluation module",
+          "description": "src/training/evaluate.py — top-1 accuracy, top-5 accuracy, per-class precision/recall/F1, confusion matrix, classification report. Save all predictions with confidence scores for analysis",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["5.1"]
+        },
+        {
+          "id": "5.4",
+          "title": "Implement checkpointing (local + Drive)",
+          "description": "Save/load model state_dict. Local save for WSL, Google Drive for Colab. Save training history as JSON (metrics per epoch). Resume from checkpoint on Colab disconnect",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["5.1"]
+        },
+        {
+          "id": "5.5",
+          "title": "Implement inference module (predict_dog_breed)",
+          "description": "src/inference/predict.py — predict_dog_breed(image_path, model) → list of {breed, confidence}. Handles: load image, resize, normalize, forward pass, softmax, extract top-3. Reusable by Experiment 2 and 3. Also: predict_batch() for multiple images",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["5.1"]
+        }
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "Local Testing — WSL (10% Data, Claude Runs)",
+      "status": "not_started",
+      "description": "Claude Code runs all models on 10% subset in WSL to validate code and get preliminary results",
+      "tasks": [
+        {
+          "id": "6.1",
+          "title": "Download and prepare 10% data subset in WSL",
+          "description": "Download dataset, organize, standardize resolution, balance classes, create 10% stratified subset. Verify pipeline works locally. Print summary stats",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.9"]
+        },
+        {
+          "id": "6.2",
+          "title": "Train Simple CNN on 10% subset",
+          "description": "Train from scratch, ~5 epochs. Record accuracy/loss. Validate code works. Expect low accuracy (~5-15%). Save metrics JSON",
+          "status": "not_started",
+          "priority": "P1",
+          "depends_on": ["6.1", "5.2"]
+        },
+        {
+          "id": "6.3",
+          "title": "Train AlexNet on 10% subset (3 TL stages)",
+          "description": "Transfer learning 3 stages, ~3 epochs each. Validate code works. Record metrics per stage",
+          "status": "not_started",
+          "priority": "P1",
+          "depends_on": ["6.1", "5.2"]
+        },
+        {
+          "id": "6.4",
+          "title": "Train VGG-16 on 10% subset (3 TL stages)",
+          "description": "Transfer learning 3 stages, ~3 epochs each. Record metrics. May be slow on CPU — reduce batch size if needed",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.1", "5.2"]
+        },
+        {
+          "id": "6.5",
+          "title": "Train Inception on 10% subset (3 TL stages)",
+          "description": "Transfer learning 3 stages, ~3 epochs each. Test 299x299 input handling. Record metrics",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.1", "5.2"]
+        },
+        {
+          "id": "6.6",
+          "title": "Train ResNet-50 on 10% subset (3 TL stages)",
+          "description": "Transfer learning 3 stages, ~3 epochs each. Record metrics. Expected best performer",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.1", "5.2"]
+        },
+        {
+          "id": "6.7",
+          "title": "Train MobileNet on 10% subset (3 TL stages)",
+          "description": "Transfer learning 3 stages, ~3 epochs each. Record metrics. Compare speed vs accuracy",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.1", "5.2"]
+        },
+        {
+          "id": "6.8",
+          "title": "Generate preliminary comparison results",
+          "description": "Aggregate all 10% results: comparison table (6 models), accuracy/loss graphs, transfer learning stage comparison, identify best model. Fix any bugs found",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.2", "6.3", "6.4", "6.5", "6.6", "6.7"]
+        },
+        {
+          "id": "6.9",
+          "title": "Generate example predictions (3 categories)",
+          "description": "Run best WSL model on validation set. Collect: 6+ correct predictions (green), 6+ wrong predictions (red), save for README. Funny category will be populated after Colab experiments",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.8"]
+        }
+      ]
+    },
+    {
+      "id": "P7",
+      "name": "Google Colab Notebook",
+      "status": "not_started",
+      "description": "Build the Colab notebook for full training (user runs this)",
+      "tasks": [
+        {
+          "id": "7.1",
+          "title": "Create Colab notebook structure",
+          "description": "notebooks/dog_breed_classifier.ipynb — Sections: 1) Setup & Drive Mount, 2) Data Pipeline, 3) Dataset Analysis, 4) Model Definitions, 5) Training, 6) Evaluation, 7) Inference Module, 8) Animal Experiment, 9) Celebrity Experiment, 10) Visualizations, 11) Results Export. Markdown explanations between cells",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.8"]
+        },
+        {
+          "id": "7.2",
+          "title": "Add Google Drive mount and data setup cells",
+          "description": "Mount Drive, set paths, download dataset to Drive if not present, organize data, verify GPU available. Colab Pro recommendations cell",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["7.1"]
+        },
+        {
+          "id": "7.3",
+          "title": "Add full training cells for all 6 models",
+          "description": "One section per model with 3 transfer learning stages. Full epochs (10-20 per stage). Progress bars. Checkpoint to Drive after each stage. Print stage comparison table after each model",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["7.2"]
+        },
+        {
+          "id": "7.4",
+          "title": "Add inference module cells",
+          "description": "Cell to load best model and demonstrate predict_dog_breed() on sample images. Show step-by-step: image → preprocess → model → softmax → top-3 breeds with confidence",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["7.3"]
+        },
+        {
+          "id": "7.5",
+          "title": "Add animal experiment cells",
+          "description": "Download/load 10 animal types (horse, zebra, cat, donkey, rabbit, fox, wolf, bear, lion, cow — 2-3 images each). Run through NN. Display: animal → predicted breed → confidence. Side-by-side gallery",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["7.4"]
+        },
+        {
+          "id": "7.6",
+          "title": "Add celebrity experiment cells",
+          "description": "Download/load ~100 famous people images. Run through NN. Display: celebrity → predicted breed → confidence. Side-by-side gallery. Top-10 funniest matches. Confidence distribution",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["7.4"]
+        },
+        {
+          "id": "7.7",
+          "title": "Add visualization and analysis cells",
+          "description": "Generate all plots: accuracy/loss comparison, confusion matrix, transfer learning stages, example predictions (correct/wrong/funny), architecture comparison bar chart, confidence histogram (dogs vs animals vs humans)",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["7.5", "7.6"]
+        },
+        {
+          "id": "7.8",
+          "title": "Add Results Export section",
+          "description": "Final cell outputs JSON with ALL results: model_comparison, transfer_learning_stages, best_model, training_times, animal_experiment (10 types), celebrity_experiment (100 people), example_predictions. User copies output → pastes to Claude Code → README update",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["7.7"]
+        }
+      ]
+    },
+    {
+      "id": "P8",
+      "name": "Experiments Implementation",
+      "status": "not_started",
+      "description": "Implement experiment code (used by both WSL preliminary and Colab final)",
+      "tasks": [
+        {
+          "id": "8.1",
+          "title": "Implement architecture comparison analysis",
+          "description": "src/experiments/compare_architectures.py — Load all training histories, generate comparison table (Model|Top-1|Top-5|Params|Time|Inference), overlaid accuracy/loss plots. Works for both preliminary (WSL) and final (Colab)",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["5.3"]
+        },
+        {
+          "id": "8.2",
+          "title": "Collect 10 non-dog animal type images",
+          "description": "Gather 2-3 images per type for: horse, zebra, cat, donkey, rabbit, fox, wolf, bear, lion, cow (~25 images total). Organize into data/processed/test/animals/{type}/. Include download script or URLs",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.9"]
+        },
+        {
+          "id": "8.3",
+          "title": "Implement non-dog animal prediction experiment",
+          "description": "src/experiments/non_dog_predictions.py — For each animal image: preprocess → feed through best model → softmax → top-3 breeds + confidence. Save CSV. Analyze: are confidences lower than real dogs? Do wolves→huskies? Do zebras→dalmatians?",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["5.5", "8.2"]
+        },
+        {
+          "id": "8.4",
+          "title": "Collect 100 famous people images",
+          "description": "Gather ~100 face images: ~30 actors, ~20 musicians, ~15 athletes, ~15 politicians, ~10 scientists, ~10 other. Organize into data/processed/test/humans/. Include name mapping file (filename → person name)",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["3.9"]
+        },
+        {
+          "id": "8.5",
+          "title": "Implement celebrity-dog matching experiment",
+          "description": "src/experiments/celebrity_matching.py — For each celebrity: preprocess → feed through best model → softmax → top-3 breeds + confidence. Find matching breed sample image from training set. Create side-by-side gallery. Save CSV with all results",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["5.5", "8.4"]
+        },
+        {
+          "id": "8.6",
+          "title": "Implement example predictions collector (3 categories)",
+          "description": "Collect and save example predictions in 3 categories: (1) Correct dog classifications (green), (2) Wrong dog classifications (red, show predicted vs actual), (3) Funny results — humans/animals as dogs (yellow). At least 6 examples per category",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.3", "8.5"]
+        },
+        {
+          "id": "8.7",
+          "title": "Analyze all experiment results",
+          "description": "Write analysis: confidence patterns (dogs vs animals vs humans), why certain associations, funniest matches, what features CNN learned, do similar-looking animals get similar breeds? Do bald people get hairless breeds?",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.3", "8.5", "8.6"]
+        }
+      ]
+    },
+    {
+      "id": "P9",
+      "name": "Visualization",
+      "status": "not_started",
+      "tasks": [
+        {
+          "id": "9.1",
+          "title": "Generate accuracy and loss comparison plots",
+          "description": "src/visualization/plots.py — Accuracy vs Epochs (all 6 models overlaid), Loss vs Epochs (all 6 overlaid), architecture comparison bar chart (final accuracy side-by-side). Works for preliminary and final data",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.1"]
+        },
+        {
+          "id": "9.2",
+          "title": "Generate confusion matrix",
+          "description": "src/visualization/confusion.py — Heatmap for best model (top-20 most confused breeds). Per-class accuracy bar chart. Most commonly confused breed pairs list",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.1"]
+        },
+        {
+          "id": "9.3",
+          "title": "Generate transfer learning stage comparison",
+          "description": "Bar chart: for each model, show Stage 1 vs Stage 2 vs Stage 3 accuracy. Identify which stage was best per model",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.1"]
+        },
+        {
+          "id": "9.4",
+          "title": "Generate example predictions grid (3 categories)",
+          "description": "Create image grid with: correct predictions (green border, 6+), wrong predictions (red border, 6+), funny predictions — humans/animals as dogs (yellow border, 6+). Each shows image + predicted label + actual label + confidence",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.6"]
+        },
+        {
+          "id": "9.5",
+          "title": "Generate animal experiment gallery",
+          "description": "Side-by-side grid: each of 10 animal types → predicted dog breed photo → breed name → confidence %. Save as results/experiments/animal_gallery.png",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.3"]
+        },
+        {
+          "id": "9.6",
+          "title": "Generate celebrity-dog match gallery",
+          "description": "src/visualization/gallery.py — Side-by-side: celebrity photo → predicted dog breed photo → breed name → confidence. Top-20 funniest matches. Save as PNG grid to results/experiments/celebrity_gallery/",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.5"]
+        },
+        {
+          "id": "9.7",
+          "title": "Generate confidence distribution histogram",
+          "description": "Histogram comparing softmax confidence: actual dogs (validation set) vs non-dog animals vs humans. Shows the model is less confident on non-dogs. Save as results/graphs/confidence_distribution.png",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.7"]
+        },
+        {
+          "id": "9.8",
+          "title": "Export all comparison tables to CSV",
+          "description": "Save: model_comparison.csv, transfer_learning_comparison.csv, non_dog_predictions.csv, celebrity_dog_matches.csv, example_predictions.csv to results/tables/",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["8.7"]
+        }
+      ]
+    },
+    {
+      "id": "P10",
+      "name": "README — Preliminary (from WSL 10% results)",
+      "status": "not_started",
+      "description": "Claude Code writes README v1 using preliminary results from local 10% testing",
+      "tasks": [
+        {
+          "id": "10.1",
+          "title": "Write CNN fundamentals section",
+          "description": "Explain at 12-year-old level with real-world analogies AND precise technical detail: neural networks, convolution (sliding magnifying glass), kernel/filter, pooling, ReLU, softmax, loss function, backpropagation, epochs, overfitting, data augmentation. Include ASCII/text diagrams for each concept",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.8"]
+        },
+        {
+          "id": "10.2",
+          "title": "Write architecture explanations section",
+          "description": "For each of 6 architectures: what is it, when created, how it works, key innovation, when to use, visual diagram (ASCII blocks), 12-year-old analogy. Include historical evolution timeline. Expert should learn from the clear comparisons",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.8"]
+        },
+        {
+          "id": "10.3",
+          "title": "Write architecture comparison table",
+          "description": "Detailed table: Architecture | Year | Layers | Params | Key Innovation | Our Accuracy | Training Time | Best For. Fill with preliminary 10% results",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.8"]
+        },
+        {
+          "id": "10.4",
+          "title": "Write transfer learning explanation",
+          "description": "Why it works (bicycle→motorcycle analogy), 3 stages explained simply then technically, diagrams showing freeze/unfreeze, preliminary stage comparison results",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.8"]
+        },
+        {
+          "id": "10.5",
+          "title": "Write preliminary results section",
+          "description": "Results from 10% WSL testing, labeled 'Preliminary (10% subset)'. Include graphs, tables, example predictions (correct/wrong). Caveat about subset size",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.9"]
+        },
+        {
+          "id": "10.6",
+          "title": "Write installation and usage instructions",
+          "description": "Prerequisites, Installation (WSL + PowerShell + Colab), How to Run, Project Structure, Dependencies. Both WSL and Windows paths. Colab link and instructions",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["6.8"]
+        },
+        {
+          "id": "10.7",
+          "title": "Create visual diagrams for README",
+          "description": "Create ASCII/text diagrams: CNN architecture flow, convolution operation, pooling operation, transfer learning stages, each architecture's block diagram, the inference pipeline (image → model → breed). These make the README accessible to a 12-year-old",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["10.1", "10.2"]
+        }
+      ]
+    },
+    {
+      "id": "P11",
+      "name": "README — Final Update (from Colab full results)",
+      "status": "not_started",
+      "description": "After user runs Colab and pastes results, Claude Code updates README with final data",
+      "tasks": [
+        {
+          "id": "11.1",
+          "title": "Update results section with final Colab data",
+          "description": "Replace preliminary results with final full-dataset numbers. Update all tables, graphs, accuracy values. Keep preliminary section as comparison if interesting",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["10.5"]
+        },
+        {
+          "id": "11.2",
+          "title": "Add animal experiment results to README",
+          "description": "Write section: show each of 10 animal types → predicted breed, side-by-side images. Analysis: why wolf→husky? zebra→dalmatian? What features did CNN learn? Confidence comparison chart",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["11.1"]
+        },
+        {
+          "id": "11.3",
+          "title": "Add celebrity experiment results to README",
+          "description": "Write section: methodology (step-by-step inference pipeline), gallery of matches, top-10 funniest, analysis of what features CNN sees in faces, confidence distribution, what this teaches about AI perception",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["11.1"]
+        },
+        {
+          "id": "11.4",
+          "title": "Add example predictions section (3 categories)",
+          "description": "Display in README: correct predictions (green), wrong predictions (red, with actual vs predicted), funny predictions (yellow, humans/animals as dogs). At least 6 examples per category with images",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["11.1"]
+        },
+        {
+          "id": "11.5",
+          "title": "Write final insights and conclusions",
+          "description": "Which model won and WHY (not just numbers). Which TL stage was best. What surprised us. Model limitations. Architecture recommendations for different scenarios. What we learned about how CNNs see. Ideas for improvement",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["11.2", "11.3", "11.4"]
+        },
+        {
+          "id": "11.6",
+          "title": "Final README review and polish",
+          "description": "Review entire README: 12-year-old can understand it? Expert finds it valuable? All diagrams present? All results tables filled? All image links work? Proper formatting? Table of contents correct? Spell check",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["11.5"]
+        }
+      ]
+    },
+    {
+      "id": "P12",
+      "name": "Final Review & Cleanup",
+      "status": "not_started",
+      "tasks": [
+        {
+          "id": "12.1",
+          "title": "Code quality review",
+          "description": "Review all src/ files: docstrings, type hints, consistent style, config.py used (no hardcoded paths), proper error handling, clean imports, file size ≤200 lines",
+          "status": "not_started",
+          "priority": "P1",
+          "depends_on": ["9.8"]
+        },
+        {
+          "id": "12.2",
+          "title": "Verify all results and outputs exist",
+          "description": "Check: all 10 required graphs in results/graphs/, all CSVs in results/tables/, model weights saved, celebrity gallery complete, animal gallery complete, example predictions grid complete",
+          "status": "not_started",
+          "priority": "P0",
+          "depends_on": ["11.6"]
+        },
+        {
+          "id": "12.3",
+          "title": "Prepare for GitHub upload",
+          "description": "Verify .gitignore (no data/models committed), README renders correctly on GitHub, all relative image links work, project structure clean",
+          "status": "not_started",
+          "priority": "P1",
+          "depends_on": ["11.6", "12.1", "12.2"]
+        }
+      ]
+    }
+  ]
+}

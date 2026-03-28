@@ -1,0 +1,50 @@
+# Data (too large for git)
+data/raw/
+data/processed/
+
+# Model weights (too large for git)
+results/models/*.pth
+results/models/*.pt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials
+.env
+kaggle.json
+*.kaggle
+token.json
+credentials.json
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Build helpers (not needed in repo)
+build_notebook.py
+notebooks/cell1_setup.py
+notebooks/cell2_train.py
+notebooks/cell3_eval.py
