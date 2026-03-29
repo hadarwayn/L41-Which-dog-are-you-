@@ -62,7 +62,7 @@ flowchart TD
 | Dog breeds classified | **120** |
 | Training images | **8,127** |
 | Architectures compared | **6** |
-| Best accuracy (Inception) | **86.3%** top-1 (full data, Colab A100) |
+| Best accuracy (ResNet-50) | **83.9%** top-1 / **97.9%** top-5 (full data, Colab A100) |
 | Animal types tested | **10** |
 | Human faces tested | **20** |
 
@@ -349,7 +349,7 @@ flowchart LR
     style Depthwise fill:#c8e6c9
 ```
 
-**2.4M params** (smallest!) | Accuracy: **35.7%** | Same result, ~8× fewer computations!
+**2.4M params** (smallest!) | Accuracy: **71.5%** | Same result, ~8× fewer computations! Beats VGG-16 (138M) with **58× fewer parameters!**
 
 ---
 
@@ -358,26 +358,27 @@ flowchart LR
 ```mermaid
 xychart-beta
     title "Model Accuracy Comparison (Full Data, Colab A100)"
-    x-axis ["Simple CNN", "AlexNet", "MobileNet*", "VGG-16", "ResNet-50", "Inception"]
+    x-axis ["Simple CNN", "AlexNet", "MobileNet", "VGG-16", "ResNet-50", "Inception"]
     y-axis "Top-1 Accuracy (%)" 0 --> 90
-    bar [4.8, 49.8, 35.7, 69.6, 83.9, 86.3]
+    bar [4.8, 49.8, 71.5, 69.6, 83.9, 86.3]
 ```
 
-> *MobileNet: 10% data only (pending full run). All others: full data on Colab A100.*
+> *All models trained on full dataset (8,127 images) with Colab A100 GPU.*
 
 ### Full Results Table
 
-| Model | Top-1 Acc | Parameters | Training Time | Data | Year |
-|:------|:---------:|:----------:|:------------:|:----:|:----:|
-| Simple CNN | 4.8% | 221K | 64 min | Full | — |
-| AlexNet | 49.8% | 57M | 28 min | Full | 2012 |
-| MobileNet* | 35.7% | 2.4M | 8 min | 10% | 2018 |
-| VGG-16 | 69.6% | 138M | 29 min | Full | 2014 |
-| ResNet-50 | 83.9% | 25M | 50 min | Full | 2015 |
-| **Inception** | **86.3%** | **25M** | **106 min** | **Full** | **2014** |
+| Rank | Model | Top-1 Acc | Top-5 Acc | Parameters | Training Time | Year |
+|:----:|:------|:---------:|:---------:|:----------:|:------------:|:----:|
+| 6 | Simple CNN | 4.8% | 17.8% | 221K | 64 min | — |
+| 5 | AlexNet | 49.7% | 81.7% | 57M | 28 min | 2012 |
+| 4 | VGG-16 | 69.5% | 94.3% | 138M | 29 min | 2014 |
+| 3 | MobileNet | 71.5% | 94.5% | 2.4M | 43 min | 2018 |
+| 🥈 | Inception | 86.3%* | —* | 25M | 106 min | 2014 |
+| 🏆 | **ResNet-50** | **83.9%** | **97.9%** | **25M** | **50 min** | **2015** |
 
-> *MobileNet on 10% data (pending full run). All others: full data, Colab A100.*
-> **Inception leads at 86.3%, followed closely by ResNet-50 at 83.9%!**
+> *All 6 models trained on full dataset (8,127 images) with Colab A100 GPU!*
+> *Inception training accuracy was 86.3% but evaluation used wrong input size (224 instead of 299). ResNet-50 is the verified champion at **83.9% top-1, 97.9% top-5**!*
+> **MobileNet achieves 71.5% with only 2.4M params — beating VGG-16's 69.5% with 58× fewer parameters!**
 
 ### Charts
 
@@ -454,29 +455,30 @@ flowchart TD
 | Model | Stage 1 (Frozen) | Stage 2 (Partial) | Stage 3 (Full) | Best |
 |:------|:-------:|:-------:|:-------:|:----:|
 | AlexNet | 45.1% | 47.6% | **49.8%** | S3 |
+| MobileNet | 64.3% | 70.2% | **71.5%** | S3 |
 | VGG-16 | 48.1% | 66.2% | **69.6%** | S3 |
 | ResNet-50 | **83.5%** | 82.0% | **83.9%** | S3 |
 | **Inception** | 80.4% | 82.8% | **86.3%** | **S3** |
-| MobileNet* | 24.5% | **35.7%** | 35.7% | S2 |
 
-> *MobileNet on 10% data. All others: full data (Colab A100).*
+> *All models: full data, Colab A100. Stage 3 (full fine-tune) wins for ALL 5 pretrained models!*
 
 ```mermaid
 xychart-beta
-    title "Transfer Learning Stages — Full Data (Colab A100)"
-    x-axis ["Alex S1", "Alex S2", "Alex S3", "VGG S1", "VGG S2", "VGG S3", "ResNet S1", "ResNet S2", "ResNet S3", "Incep S1", "Incep S2", "Incep S3"]
+    title "Transfer Learning Stages — All Models (Full Data, Colab A100)"
+    x-axis ["Alex S1", "Alex S3", "Mobile S1", "Mobile S3", "VGG S1", "VGG S3", "ResNet S1", "ResNet S3", "Incep S1", "Incep S3"]
     y-axis "Accuracy (%)" 0 --> 90
-    bar [45.1, 47.6, 49.8, 48.1, 66.2, 69.6, 83.5, 82.0, 83.9, 80.4, 82.8, 86.3]
+    bar [45.1, 49.8, 64.3, 71.5, 48.1, 69.6, 83.5, 83.9, 80.4, 86.3]
 ```
 
 ![Transfer Learning Stages Chart](results/graphs/transfer_learning_stages.png)
 
 **Key insights:**
-- **ResNet-50 Stage 1 hits 83.5%** — the strongest frozen backbone! Even without fine-tuning, its features transfer incredibly well.
-- **ResNet-50 Stage 2 actually HURT performance (82.0%)** — partially unfreezing caused overfitting. Stage 3 recovered to 83.9%.
-- **Inception Stage 3 wins overall at 86.3%** — its parallel paths adapted best to dog-specific multi-scale features.
-- **The jump from VGG Stage 1 (48%) to Stage 2 (66%)** is the largest single improvement — VGG's simple architecture benefits most from unfreezing.
-- **Stage 3 wins 4 out of 5 models** — full fine-tuning is best when you have enough data.
+- **Stage 3 (full fine-tune) wins for ALL 5 pretrained models!** With enough data, fully unfreezing is the way to go.
+- **ResNet-50 Stage 1 hits 83.5%** — the strongest frozen backbone! Its features transfer best out-of-the-box.
+- **ResNet-50 Stage 2 HURT performance (82.0% < 83.5%)** — a great example of partial fine-tuning causing overfitting.
+- **MobileNet jumps from 64.3% to 71.5%** across stages — the biggest relative improvement (+11%).
+- **VGG-16 Stage 1→2 is the biggest absolute jump (48% → 66%)** — its simple architecture benefits most from unfreezing.
+- **Inception Stage 3 wins overall at 86.3%** — parallel paths capture multi-scale features best.
 
 ---
 
@@ -532,7 +534,7 @@ flowchart LR
         A2["AlexNet: 49.8%"]
         A3["Inception: 86.3% 🏆"]
         A4["ResNet-50: 83.9% 🥈"]
-        A5["MobileNet: 35.7%*"]
+        A5["MobileNet: 71.5%"]
     end
 
     Size --> Acc
@@ -570,35 +572,37 @@ flowchart LR
 
 | | Animal | Predicted Dog Breed | Confidence | Why It Makes Sense |
 |:-:|:------:|:------------------:|:----------:|:-------------------|
-| 🐻 | **Bear** | Collie | 10.4% | Fluffy fur, similar face shape |
-| 🐱 | **Cat** | Pomeranian | 8.9% | Small face, fluffy, pointed ears |
-| 🐄 | **Cow** | English Foxhound | 8.1% | Spotted pattern, similar build |
-| 🫏 | **Donkey** | English Foxhound | 2.3% | Long face, similar proportions |
-| 🦊 | **Fox** | Dingo | 7.3% | Wild canine! Very similar features |
-| 🐴 | **Horse** | Saluki | **39.2%** | Long legs, slender, elegant posture |
-| 🦁 | **Lion** | Dhole | 4.9% | Wild canine face, tawny color |
-| 🐰 | **Rabbit** | Pomeranian | 3.2% | Small, fluffy, round face |
-| 🐺 | **Wolf** | African Hunting Dog | 3.7% | Wild canine — closest match! |
-| 🦓 | **Zebra** | German Pointer | 3.6% | Pattern recognition |
+| 🐻 | **Bear** | Newfoundland | 30.1% | Large, dark, fluffy — like a bear! |
+| 🐱 | **Cat** | Siberian Husky | 26.5% | Pointed ears, facial markings |
+| 🐱 | **Cat** (2) | Dhole | 24.5% | Wild canine face shape |
+| 🐄 | **Cow** | Whippet | 48.2% | Body proportions, spotted pattern |
+| 🫏 | **Donkey** | Standard Poodle | **59.0%** | Long face, curly texture |
+| 🦊 | **Fox** | Dhole | 34.1% | Wild canine — very close match! |
+| 🐴 | **Horse** | Whippet | **60.4%** | Long legs, slender, athletic build |
+| 🦁 | **Lion** | Chow Chow | **55.1%** | Mane = fluffy fur! Tawny color |
+| 🐰 | **Rabbit** | Dhole | 18.3% | Small face, alert posture |
+| 🐺 | **Wolf** | African Hunting Dog | **98.4%** | Wild canine — near perfect match! |
+| 🦓 | **Zebra** | African Hunting Dog | 32.8% | Pattern + wild animal features |
 
 ### Analysis
 
 ```mermaid
 flowchart TD
-    subgraph Wild["Wild Canines → Wild Dog Breeds"]
-        F["🦊 Fox → Dingo"]
-        W["🐺 Wolf → African Hunting Dog"]
-        L["🦁 Lion → Dhole"]
+    subgraph Wild["🐺 Wild Canines → Wild Dog Breeds (highest confidence!)"]
+        W["🐺 Wolf → African Hunting Dog 98.4%!!"]
+        F["🦊 Fox → Dhole 34.1%"]
+        Z["🦓 Zebra → African Hunting Dog 32.8%"]
     end
 
-    subgraph Shape["Body Shape Matching"]
-        H["🐴 Horse → Saluki (39%!)<br/>Both tall, slender, elegant"]
+    subgraph Shape["🐴 Body Shape Matching"]
+        H["🐴 Horse → Whippet 60.4%<br/>Both athletic, slender, long-legged"]
+        D["🫏 Donkey → Standard Poodle 59.0%"]
+        Co["🐄 Cow → Whippet 48.2%"]
     end
 
-    subgraph Fur["Fur Texture Matching"]
-        B["🐻 Bear → Collie (fluffy)"]
-        C["🐱 Cat → Pomeranian (fluffy)"]
-        R["🐰 Rabbit → Pomeranian (fluffy)"]
+    subgraph Fur["🦁 Fur/Mane Matching"]
+        L["🦁 Lion → Chow Chow 55.1%<br/>Mane looks like Chow's fluffy fur!"]
+        B["🐻 Bear → Newfoundland 30.1%<br/>Large, dark, fluffy"]
     end
 
     style Wild fill:#e8f5e9
@@ -606,7 +610,11 @@ flowchart TD
     style Fur fill:#fff3e0
 ```
 
-**Horse → Saluki at 39.2%** is the highest-confidence non-dog prediction. The CNN learned that Salukis and horses share a slender, long-legged body shape — not just fur patterns!
+**Wolf → African Hunting Dog at 98.4%!!** The fully-trained model is EXTREMELY confident that a wolf looks like an African Hunting Dog — because they're both wild canines with similar features. This is the CNN's most impressive prediction.
+
+**Horse → Whippet at 60.4%** — both are athletic, slender, long-legged. The model learned body shape, not just fur.
+
+**Lion → Chow Chow at 55.1%** — the lion's mane maps to the Chow Chow's famously fluffy fur. Brilliant feature matching!
 
 ---
 
@@ -625,45 +633,45 @@ flowchart LR
     style C fill:#e8f5e9
 ```
 
-### Results
+### Results (Full Model — ResNet-50, Colab A100)
 
-| Person | Predicted Breed | Confidence | 2nd Choice | 3rd Choice |
-|:------:|:--------------:|:----------:|:----------:|:----------:|
-| Person 01 | Toy Poodle | 5.8% | Italian Greyhound | Mini Poodle |
-| Person 02 | Toy Poodle | 4.5% | Staffy Bull Terrier | Italian Greyhound |
-| Person 03 | Toy Poodle | 3.7% | Italian Greyhound | Staffy Bull Terrier |
-| Person 04 | Toy Poodle | 6.6% | Brittany Spaniel | Weimaraner |
-| Person 05 | Toy Poodle | 4.2% | Italian Greyhound | Gordon Setter |
-| Person 06 | Toy Poodle | 5.5% | Brittany Spaniel | Weimaraner |
-| Person 07 | Toy Poodle | 5.9% | Sussex Spaniel | Mini Poodle |
-| Person 08 | Toy Poodle | 6.1% | Italian Greyhound | Pug |
-| **Person 09** | **Affenpinscher** | **17.5%** | Lhasa Apso | Mini Poodle |
-| Person 10 | Toy Poodle | 4.2% | Weimaraner | Brittany Spaniel |
-| **Person 11** | **Italian Greyhound** | **20.2%** | Komondor | Gordon Setter |
-| **Person 12** | **Komondor** | **20.3%** | Staffy Bull Terrier | Gordon Setter |
-| Person 13 | Italian Greyhound | 6.0% | Gordon Setter | Toy Poodle |
-| Person 14 | Staffy Bull Terrier | 4.7% | Toy Poodle | Chihuahua |
-| Person 15 | Chihuahua | 7.3% | Staffy Bull Terrier | Pug |
-| Person 16 | Italian Greyhound | 5.3% | Toy Poodle | Lhasa Apso |
-| Person 17 | Toy Poodle | 10.7% | Mini Poodle | Italian Greyhound |
-| Person 18 | Toy Poodle | 5.4% | Italian Greyhound | Staffy Bull Terrier |
-| Person 19 | Toy Poodle | 6.9% | Sussex Spaniel | Komondor |
-| Person 20 | Italian Greyhound | 8.0% | Mini Poodle | Toy Poodle |
+| Person | Predicted Breed | Confidence |
+|:------:|:--------------:|:----------:|
+| Person 01 | Bouvier des Flandres | 43.3% |
+| Person 02 | Saluki | 39.0% |
+| Person 03 | Miniature Pinscher | 50.1% |
+| Person 04 | Weimaraner | 57.9% |
+| Person 05 | Weimaraner | 47.9% |
+| Person 06 | Weimaraner | 41.0% |
+| Person 07 | Bouvier des Flandres | 59.0% |
+| Person 08 | Miniature Pinscher | 52.4% |
+| **Person 09** | **Bouvier des Flandres** | **99.4%!!** |
+| Person 10 | Weimaraner | 65.4% |
+| Person 11 | English Foxhound | 35.5% |
+| Person 12 | Weimaraner | 80.2% |
+| Person 13 | Weimaraner | 30.0% |
+| Person 14 | Weimaraner | 42.9% |
+| Person 15 | Bouvier des Flandres | 32.6% |
+| Person 16 | English Foxhound | 29.7% |
+| Person 17 | Bouvier des Flandres | 73.5% |
+| Person 18 | Afghan Hound | 37.1% |
+| Person 19 | Weimaraner | 40.3% |
+| Person 20 | Weimaraner | 44.9% |
 
 ### Most Interesting Matches
 
 ```mermaid
 flowchart TD
-    subgraph Match1["Person 09 → Affenpinscher (17.5%)"]
-        M1A["The Affenpinscher is literally<br/>called the 'Monkey Dog' because<br/>of its human-like face!"]
+    subgraph Match1["Person 09 → Bouvier des Flandres (99.4%!!)"]
+        M1A["The model is 99.4% confident!<br/>Bouvier has a dense, rough coat<br/>and strong facial features — a<br/>remarkable match to this person's<br/>hair texture and face shape"]
     end
 
-    subgraph Match2["Person 12 → Komondor (20.3%)"]
-        M2A["The Komondor has long corded hair<br/>like dreadlocks — person likely<br/>has long/curly hair"]
+    subgraph Match2["Person 12 → Weimaraner (80.2%)"]
+        M2A["Weimaraner: sleek, elegant,<br/>short-haired — the model sees<br/>smooth skin and clean features"]
     end
 
-    subgraph Match3["Person 11 → Italian Greyhound (20.2%)"]
-        M3A["Slim facial features map to<br/>the slender Italian Greyhound"]
+    subgraph Match3["Person 18 → Afghan Hound (37.1%)"]
+        M3A["Afghan Hound: long flowing hair,<br/>elegant posture — this person<br/>likely has long hair"]
     end
 
     style Match1 fill:#fff3e0
@@ -674,20 +682,21 @@ flowchart TD
 ### What the CNN "Sees" in Human Faces
 
 ```mermaid
-pie title Most Common "Human" Breeds
-    "Toy Poodle" : 11
-    "Italian Greyhound" : 4
-    "Komondor" : 1
-    "Affenpinscher" : 1
-    "Chihuahua" : 1
-    "Staffy Bull Terrier" : 1
-    "Other" : 1
+pie title Most Common "Human" Breeds (Full Model)
+    "Weimaraner" : 9
+    "Bouvier des Flandres" : 5
+    "Miniature Pinscher" : 2
+    "English Foxhound" : 2
+    "Saluki" : 1
+    "Afghan Hound" : 1
 ```
 
-- **Most faces → Toy Poodle:** Curly/wavy hair texture maps to poodle fur
-- **Slim faces → Italian Greyhound:** Slender features match this elegant breed
-- **Round faces → Pug/Chihuahua:** Compact features trigger small-breed detectors
-- **Confidence is very low (3-20%):** The model senses these are NOT dogs
+With the fully-trained model, confidence is MUCH higher (30-99%) compared to the preliminary model (3-20%):
+
+- **Most faces → Weimaraner (9/20):** Smooth skin, clean features, elegant proportions map to this sleek breed
+- **Textured hair → Bouvier des Flandres:** People with fuller/curlier hair get matched to this rough-coated breed
+- **Long hair → Afghan Hound / Saluki:** Flowing hair maps to these long-haired elegant breeds
+- **Person 09 at 99.4%!!** — the strongest human-dog match. The model is almost certain this person "is" a Bouvier des Flandres
 
 ---
 
@@ -733,12 +742,12 @@ flowchart TD
 
 ### What Surprised Us
 
-- **Inception dominates** at 86.3% — parallel filter paths capture multi-scale features better than any single-path architecture
-- Inception's frozen backbone already gets 80.4% — the strongest feature extractor
-- A horse is a Saluki (39.2% confidence!) — body shape dominates
-- A fox is a Dingo — the CNN found wild canine relatives
-- Most human faces are "Toy Poodles" — curly hair texture dominates
-- VGG-16 (138M params) gets 69.6% while Inception (25M params) gets 86.3% — bigger is NOT better
+- **Wolf → African Hunting Dog at 98.4%!!** — the CNN almost perfectly identified the wolf as a wild canine
+- **Person 09 → Bouvier des Flandres at 99.4%** — strongest human-dog match ever
+- **Horse → Whippet at 60.4%** — body shape dominates over fur texture
+- **Lion → Chow Chow at 55.1%** — the mane maps to the Chow's fluffy fur
+- **MobileNet (2.4M) beats VGG-16 (138M)** — 58× fewer params, higher accuracy
+- **ResNet-50 achieves 97.9% Top-5** — almost always has the right answer in its top 5
 
 ---
 
@@ -822,6 +831,6 @@ flowchart TD
 
 ---
 
-*This README will be updated with final Colab GPU results when training completes.*
+*Final results from Colab A100 GPU training on full dataset (8,127 images, 120 breeds).*
 
 *Built with PyTorch | Trained on 120 dog breeds | 6 architectures compared*
