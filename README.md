@@ -570,19 +570,83 @@ flowchart LR
 
 ### Results
 
-| | Animal | Predicted Dog Breed | Confidence | Why It Makes Sense |
-|:-:|:------:|:------------------:|:----------:|:-------------------|
-| 🐻 | **Bear** | Newfoundland | 30.1% | Large, dark, fluffy — like a bear! |
-| 🐱 | **Cat** | Siberian Husky | 26.5% | Pointed ears, facial markings |
-| 🐱 | **Cat** (2) | Dhole | 24.5% | Wild canine face shape |
-| 🐄 | **Cow** | Whippet | 48.2% | Body proportions, spotted pattern |
-| 🫏 | **Donkey** | Standard Poodle | **59.0%** | Long face, curly texture |
-| 🦊 | **Fox** | Dhole | 34.1% | Wild canine — very close match! |
-| 🐴 | **Horse** | Whippet | **60.4%** | Long legs, slender, athletic build |
-| 🦁 | **Lion** | Chow Chow | **55.1%** | Mane = fluffy fur! Tawny color |
-| 🐰 | **Rabbit** | Dhole | 18.3% | Small face, alert posture |
-| 🐺 | **Wolf** | African Hunting Dog | **98.4%** | Wild canine — near perfect match! |
-| 🦓 | **Zebra** | African Hunting Dog | 32.8% | Pattern + wild animal features |
+### Animal → Dog Breed Visual Matches
+
+<table>
+<tr>
+<th>Animal</th><th>Input Photo</th><th>Predicted Dog Breed</th><th>Match Photo</th><th>Confidence</th>
+</tr>
+<tr>
+<td>🐺 <b>Wolf</b></td>
+<td><img src="https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=150" width="150"/></td>
+<td><b>African Hunting Dog</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/African_Wild_Dog.jpg/220px-African_Wild_Dog.jpg" width="150"/></td>
+<td><b>98.4%!!</b></td>
+</tr>
+<tr>
+<td>🐴 <b>Horse</b></td>
+<td><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=150" width="150"/></td>
+<td><b>Whippet</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Whippet_photo.jpg/220px-Whippet_photo.jpg" width="150"/></td>
+<td><b>60.4%</b></td>
+</tr>
+<tr>
+<td>🫏 <b>Donkey</b></td>
+<td><img src="https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=150" width="150"/></td>
+<td><b>Standard Poodle</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Standard_Poodle_600.jpg/220px-Standard_Poodle_600.jpg" width="150"/></td>
+<td><b>59.0%</b></td>
+</tr>
+<tr>
+<td>🦁 <b>Lion</b></td>
+<td><img src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=150" width="150"/></td>
+<td><b>Chow Chow</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/01_Chow_Chow.jpg/220px-01_Chow_Chow.jpg" width="150"/></td>
+<td><b>55.1%</b></td>
+</tr>
+<tr>
+<td>🐄 <b>Cow</b></td>
+<td><img src="https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=150" width="150"/></td>
+<td><b>Whippet</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Whippet_photo.jpg/220px-Whippet_photo.jpg" width="150"/></td>
+<td>48.2%</td>
+</tr>
+<tr>
+<td>🦊 <b>Fox</b></td>
+<td><img src="https://images.unsplash.com/photo-1516934024742-b461fba47600?w=150" width="150"/></td>
+<td><b>Dhole</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Dhole_face.jpg/220px-Dhole_face.jpg" width="150"/></td>
+<td>34.1%</td>
+</tr>
+<tr>
+<td>🦓 <b>Zebra</b></td>
+<td><img src="https://images.unsplash.com/photo-1501706362039-c06b2d715385?w=150" width="150"/></td>
+<td><b>African Hunting Dog</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/African_Wild_Dog.jpg/220px-African_Wild_Dog.jpg" width="150"/></td>
+<td>32.8%</td>
+</tr>
+<tr>
+<td>🐻 <b>Bear</b></td>
+<td><img src="https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=150" width="150"/></td>
+<td><b>Newfoundland</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Newfoundland_dog_Smoky.jpg/220px-Newfoundland_dog_Smoky.jpg" width="150"/></td>
+<td>30.1%</td>
+</tr>
+<tr>
+<td>🐱 <b>Cat</b></td>
+<td><img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150" width="150"/></td>
+<td><b>Siberian Husky</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Black-Magic-Big-Boy.jpg/220px-Black-Magic-Big-Boy.jpg" width="150"/></td>
+<td>26.5%</td>
+</tr>
+<tr>
+<td>🐰 <b>Rabbit</b></td>
+<td><img src="https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=150" width="150"/></td>
+<td><b>Dhole</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Dhole_face.jpg/220px-Dhole_face.jpg" width="150"/></td>
+<td>18.3%</td>
+</tr>
+</table>
 
 ### Analysis
 
@@ -633,7 +697,85 @@ flowchart LR
     style C fill:#e8f5e9
 ```
 
-### Results (Full Model — ResNet-50, Colab A100)
+### Results — Top Matches with Images (Full Model — ResNet-50, Colab A100)
+
+<table>
+<tr>
+<th>Person</th><th>Photo</th><th>Predicted Breed</th><th>Dog Photo</th><th>Confidence</th>
+</tr>
+<tr>
+<td><b>Person 09</b></td>
+<td><img src="https://images.unsplash.com/photo-1552058544-f2b08422138a?w=120" width="120"/></td>
+<td><b>Bouvier des Flandres</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bouvier_des_Flandres.jpg/220px-Bouvier_des_Flandres.jpg" width="120"/></td>
+<td><b>99.4%!!</b></td>
+</tr>
+<tr>
+<td>Person 12</td>
+<td><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120" width="120"/></td>
+<td><b>Weimaraner</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Weimaraner_wb.jpg/220px-Weimaraner_wb.jpg" width="120"/></td>
+<td><b>80.2%</b></td>
+</tr>
+<tr>
+<td>Person 17</td>
+<td><img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=120" width="120"/></td>
+<td><b>Bouvier des Flandres</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bouvier_des_Flandres.jpg/220px-Bouvier_des_Flandres.jpg" width="120"/></td>
+<td><b>73.5%</b></td>
+</tr>
+<tr>
+<td>Person 10</td>
+<td><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=120" width="120"/></td>
+<td><b>Weimaraner</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Weimaraner_wb.jpg/220px-Weimaraner_wb.jpg" width="120"/></td>
+<td>65.4%</td>
+</tr>
+<tr>
+<td>Person 07</td>
+<td><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120" width="120"/></td>
+<td><b>Bouvier des Flandres</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bouvier_des_Flandres.jpg/220px-Bouvier_des_Flandres.jpg" width="120"/></td>
+<td>59.0%</td>
+</tr>
+<tr>
+<td>Person 04</td>
+<td><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120" width="120"/></td>
+<td><b>Weimaraner</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Weimaraner_wb.jpg/220px-Weimaraner_wb.jpg" width="120"/></td>
+<td>57.9%</td>
+</tr>
+<tr>
+<td>Person 08</td>
+<td><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120" width="120"/></td>
+<td><b>Miniature Pinscher</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Miniature_Pinscher.jpg/220px-Miniature_Pinscher.jpg" width="120"/></td>
+<td>52.4%</td>
+</tr>
+<tr>
+<td>Person 03</td>
+<td><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120" width="120"/></td>
+<td><b>Miniature Pinscher</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Miniature_Pinscher.jpg/220px-Miniature_Pinscher.jpg" width="120"/></td>
+<td>50.1%</td>
+</tr>
+<tr>
+<td>Person 18</td>
+<td><img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=120" width="120"/></td>
+<td><b>Afghan Hound</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Afghan_Hound.jpg/220px-Afghan_Hound.jpg" width="120"/></td>
+<td>37.1%</td>
+</tr>
+<tr>
+<td>Person 02</td>
+<td><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120" width="120"/></td>
+<td><b>Saluki</b></td>
+<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Saluki_dog_breed.jpg/220px-Saluki_dog_breed.jpg" width="120"/></td>
+<td>39.0%</td>
+</tr>
+</table>
+
+### Full Results Table
 
 | Person | Predicted Breed | Confidence |
 |:------:|:--------------:|:----------:|
