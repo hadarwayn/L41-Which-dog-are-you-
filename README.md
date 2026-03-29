@@ -62,7 +62,7 @@ flowchart TD
 | Dog breeds classified | **120** |
 | Training images | **8,127** |
 | Architectures compared | **6** |
-| Best accuracy (ResNet-50) | **67.1%** top-1 / **95.8%** top-5 |
+| Best accuracy (Inception) | **86.3%** top-1 (full data, Colab A100) |
 | Animal types tested | **10** |
 | Human faces tested | **20** |
 
@@ -308,7 +308,7 @@ flowchart TD
     style E fill:#c8e6c9
 ```
 
-**25M params** (5× fewer than VGG!) | Uses 1×1 convolutions to reduce dimensions before expensive operations.
+**25M params** (5× fewer than VGG!) | Accuracy: **86.3%** (best model so far!) | Uses 1×1 convolutions to reduce dimensions before expensive operations.
 
 ### 5. ResNet-50 (2015) — The Winner
 
@@ -328,7 +328,7 @@ flowchart TD
     style F fill:#c8e6c9
 ```
 
-**25M params** | Accuracy: **67.1%** (10% data) / **95.8% top-5** | The skip connection lets gradients flow directly, solving vanishing gradients.
+**25M params** | Accuracy: **67.1%** (10% data, pending full Colab) / **95.8% top-5** | The skip connection lets gradients flow directly, solving vanishing gradients.
 
 ### 6. MobileNet v2 (2018)
 
@@ -357,22 +357,27 @@ flowchart LR
 
 ```mermaid
 xychart-beta
-    title "Model Accuracy Comparison (10% data)"
-    x-axis ["Simple CNN", "AlexNet", "MobileNet", "ResNet-50"]
-    y-axis "Top-1 Accuracy (%)" 0 --> 70
-    bar [1.4, 26.6, 35.7, 67.1]
+    title "Model Accuracy Comparison"
+    x-axis ["Simple CNN", "AlexNet", "MobileNet", "ResNet-50*", "VGG-16", "Inception"]
+    y-axis "Top-1 Accuracy (%)" 0 --> 90
+    bar [4.8, 49.8, 35.7, 67.1, 69.6, 86.3]
 ```
+
+> *Simple CNN, AlexNet, VGG-16, Inception: full data (Colab A100). MobileNet, ResNet-50: 10% data (pending full run).*
 
 ### Full Results Table
 
-| Model | Top-1 Acc | Top-5 Acc | Parameters | Training Time | Year |
-|:------|:---------:|:---------:|:----------:|:------------:|:----:|
-| Simple CNN | 1.4% | 7.0% | 221K | 4 min | — |
-| AlexNet | 26.6% | 56.6% | 57M | 16 min | 2012 |
-| MobileNet | 35.7% | 69.2% | 2.4M | 8 min | 2018 |
-| **ResNet-50** | **67.1%** | **95.8%** | **25M** | **25 min** | **2015** |
-| VGG-16 | 69.6% | — | 138M | *Colab* | 2014 |
-| Inception | *pending* | — | 25M | *Colab* | 2014 |
+| Model | Top-1 Acc | Top-5 Acc | Parameters | Training Time | Data | Year |
+|:------|:---------:|:---------:|:----------:|:------------:|:----:|:----:|
+| Simple CNN | 4.8% | — | 221K | 64 min | Full | — |
+| AlexNet | 49.8% | — | 57M | 28 min | Full | 2012 |
+| MobileNet | 35.7% | 69.2% | 2.4M | 8 min | 10% | 2018 |
+| ResNet-50 | 67.1% | 95.8% | 25M | 25 min | 10% | 2015 |
+| VGG-16 | 69.6% | — | 138M | 29 min | Full | 2014 |
+| **Inception** | **86.3%** | **—** | **25M** | **106 min** | **Full** | **2014** |
+
+> ResNet-50 and MobileNet results are from 10% data (CPU). Full Colab results pending.
+> Inception is the current leader at **86.3%** on full data with A100 GPU!
 
 ### Charts
 
@@ -446,17 +451,30 @@ flowchart TD
 
 ### Stage Results
 
+| Model | Stage 1 (Frozen) | Stage 2 (Partial) | Stage 3 (Full) | Best |
+|:------|:-------:|:-------:|:-------:|:----:|
+| AlexNet | 45.1% | 47.6% | **49.8%** | S3 |
+| VGG-16 | 48.1% | 66.2% | **69.6%** | S3 |
+| **Inception** | 80.4% | 82.8% | **86.3%** | **S3** |
+| MobileNet* | 24.5% | **35.7%** | 35.7% | S2 |
+| ResNet-50* | 49.0% | 65.7% | **67.1%** | S3 |
+
+> *MobileNet and ResNet-50 are from 10% data. Others are full data (Colab A100).*
+
 ```mermaid
 xychart-beta
-    title "Transfer Learning Stages — Accuracy per Model"
-    x-axis ["AlexNet S1", "AlexNet S2", "AlexNet S3", "MobileNet S1", "MobileNet S2", "MobileNet S3", "ResNet S1", "ResNet S2", "ResNet S3"]
-    y-axis "Accuracy (%)" 0 --> 70
-    bar [17.5, 25.2, 26.6, 24.5, 35.7, 35.7, 49.0, 65.7, 67.1]
+    title "Transfer Learning Stages — Full Data (Colab A100)"
+    x-axis ["AlexNet S1", "AlexNet S2", "AlexNet S3", "VGG S1", "VGG S2", "VGG S3", "Inception S1", "Inception S2", "Inception S3"]
+    y-axis "Accuracy (%)" 0 --> 90
+    bar [45.1, 47.6, 49.8, 48.1, 66.2, 69.6, 80.4, 82.8, 86.3]
 ```
 
 ![Transfer Learning Stages Chart](results/graphs/transfer_learning_stages.png)
 
-**Key insight:** Stage 1 (frozen backbone) already gives strong results because ImageNet features transfer well to dog breeds. Stages 2-3 improve by adapting features specifically for dogs.
+**Key insights:**
+- **Inception Stage 1 already hits 80.4%** — just by training the classifier head! The Inception backbone is incredibly good at feature extraction.
+- **Stage 3 consistently wins** for full-data training — unfreezing all layers allows the model to adapt deeply to dog-specific features.
+- **The jump from VGG Stage 1 (48%) to Stage 2 (66%)** is the largest single improvement — unfreezing the top layers of VGG dramatically helps.
 
 ---
 
@@ -479,38 +497,52 @@ flowchart LR
 
 ResNet-50's **95.8% Top-5** means the correct breed is in the top 5 guesses 96 times out of 100!
 
-### Why ResNet-50 Wins
+### Why Inception Leads (86.3%)
 
 ```mermaid
 flowchart TD
-    A["Skip Connections"] --> D["Best Accuracy"]
-    B["50 Layers<br/>Fine-grained features"] --> D
-    C["25M Params<br/>Sweet spot"] --> D
+    A["Parallel filter paths<br/>(1×1, 3×3, 5×5)"] --> D["🏆 86.3% Accuracy<br/>Best Model!"]
+    B["1×1 bottlenecks<br/>Efficient computation"] --> D
+    C["25M params<br/>5× smaller than VGG"] --> D
+    E["Strong backbone<br/>80.4% with frozen weights!"] --> D
 
     style D fill:#c8e6c9
 ```
 
-### Why MobileNet Beats AlexNet (24× Smaller!)
+The Inception module captures features at **multiple scales simultaneously** — essential for distinguishing between similar dog breeds that differ in fine details.
+
+### Architecture Size vs Accuracy
 
 ```mermaid
 flowchart LR
-    subgraph Alex["AlexNet (2012)"]
-        A1["57M params"]
-        A2["26.6% accuracy"]
+    subgraph Size["Parameters (millions)"]
+        direction TB
+        S1["VGG-16: 138M ❌"]
+        S2["AlexNet: 57M"]
+        S3["Inception: 25M ✅"]
+        S4["ResNet: 25M"]
+        S5["MobileNet: 2.4M"]
     end
 
-    subgraph Mobile["MobileNet (2018)"]
-        M1["2.4M params"]
-        M2["35.7% accuracy"]
+    subgraph Acc["Accuracy (full data)"]
+        direction TB
+        A1["VGG-16: 69.6%"]
+        A2["AlexNet: 49.8%"]
+        A3["Inception: 86.3% 🏆"]
+        A4["ResNet: 67.1%*"]
+        A5["MobileNet: 35.7%*"]
     end
 
-    Alex ---|"6 years of research"| Mobile
+    Size --> Acc
 
-    style Alex fill:#ffcdd2
-    style Mobile fill:#c8e6c9
+    style S1 fill:#ffcdd2
+    style A3 fill:#c8e6c9
+    style S3 fill:#c8e6c9
 ```
 
-Smarter architecture design (depthwise separable convolutions) beats brute force size.
+> *ResNet & MobileNet on 10% data — expected to improve significantly with full data.*
+
+**Key takeaway:** Inception achieves the best accuracy with 5× fewer parameters than VGG-16. Clever architecture (parallel paths + bottlenecks) beats brute force depth.
 
 ---
 
@@ -658,11 +690,11 @@ pie title Most Common "Human" Breeds
 
 ```mermaid
 flowchart TD
-    I1["1️⃣ Transfer learning is essential<br/>1.4% → 67.1% (48× better!)"] --> C["🎓 Deep Learning<br/>Lessons"]
-    I2["2️⃣ Architecture > Size<br/>MobileNet 2.4M beats AlexNet 57M"] --> C
-    I3["3️⃣ Skip connections are transformative<br/>ResNet enables 50+ layers"] --> C
+    I1["1️⃣ Transfer learning is essential<br/>4.8% → 86.3% (18× better!)"] --> C["🎓 Deep Learning<br/>Lessons"]
+    I2["2️⃣ Architecture > Size<br/>Inception 25M > VGG 138M"] --> C
+    I3["3️⃣ Parallel paths win<br/>Inception's multi-scale features dominate"] --> C
     I4["4️⃣ CNNs learn features, not concepts<br/>Horse = Saluki (body shape)"] --> C
-    I5["5️⃣ Top-5 is the real metric<br/>95.8% — almost always in top 5"] --> C
+    I5["5️⃣ Stage 3 (full fine-tune) is best<br/>for full datasets"] --> C
 
     style C fill:#e8f5e9
     style I1 fill:#e3f2fd
@@ -681,7 +713,7 @@ flowchart TD
     Q --> C["Learning CNNs?"]
     Q --> D["Research baseline?"]
 
-    A --> A1["✅ ResNet-50<br/>Skip connections"]
+    A --> A1["✅ Inception<br/>86.3%, multi-scale features"]
     B --> B1["✅ MobileNet<br/>3.4M params, fast"]
     C --> C1["✅ Simple CNN<br/>Build from scratch"]
     D --> D1["✅ VGG-16<br/>Simple, well-understood"]
@@ -694,11 +726,12 @@ flowchart TD
 
 ### What Surprised Us
 
+- **Inception dominates** at 86.3% — parallel filter paths capture multi-scale features better than any single-path architecture
+- Inception's frozen backbone already gets 80.4% — the strongest feature extractor
 - A horse is a Saluki (39.2% confidence!) — body shape dominates
 - A fox is a Dingo — the CNN found wild canine relatives
 - Most human faces are "Toy Poodles" — curly hair texture dominates
-- MobileNet (designed for phones) beats AlexNet (designed for GPUs)
-- ResNet-50's Top-5 of 95.8% — almost always right in its top 5
+- VGG-16 (138M params) gets 69.6% while Inception (25M params) gets 86.3% — bigger is NOT better
 
 ---
 
