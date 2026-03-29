@@ -578,72 +578,72 @@ flowchart LR
 </tr>
 <tr>
 <td>🐺 <b>Wolf</b></td>
-<td><img src="https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=150" width="150"/></td>
+<td><img src="results/images/animals/wolf.jpg" width="150"/></td>
 <td><b>African Hunting Dog</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/African_Wild_Dog.jpg/220px-African_Wild_Dog.jpg" width="150"/></td>
+<td><img src="results/images/breeds/african_hunting_dog.jpg" width="150"/></td>
 <td><b>98.4%!!</b></td>
 </tr>
 <tr>
 <td>🐴 <b>Horse</b></td>
 <td><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=150" width="150"/></td>
 <td><b>Whippet</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Whippet_photo.jpg/220px-Whippet_photo.jpg" width="150"/></td>
+<td><img src="results/images/breeds/whippet.jpg" width="150"/></td>
 <td><b>60.4%</b></td>
 </tr>
 <tr>
 <td>🫏 <b>Donkey</b></td>
 <td><img src="https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=150" width="150"/></td>
 <td><b>Standard Poodle</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Standard_Poodle_600.jpg/220px-Standard_Poodle_600.jpg" width="150"/></td>
+<td><img src="results/images/breeds/standard_poodle.jpg" width="150"/></td>
 <td><b>59.0%</b></td>
 </tr>
 <tr>
 <td>🦁 <b>Lion</b></td>
 <td><img src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=150" width="150"/></td>
 <td><b>Chow Chow</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/01_Chow_Chow.jpg/220px-01_Chow_Chow.jpg" width="150"/></td>
+<td><img src="results/images/breeds/chow_chow.jpg" width="150"/></td>
 <td><b>55.1%</b></td>
 </tr>
 <tr>
 <td>🐄 <b>Cow</b></td>
 <td><img src="https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=150" width="150"/></td>
 <td><b>Whippet</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Whippet_photo.jpg/220px-Whippet_photo.jpg" width="150"/></td>
+<td><img src="results/images/breeds/whippet.jpg" width="150"/></td>
 <td>48.2%</td>
 </tr>
 <tr>
 <td>🦊 <b>Fox</b></td>
 <td><img src="https://images.unsplash.com/photo-1516934024742-b461fba47600?w=150" width="150"/></td>
 <td><b>Dhole</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Dhole_face.jpg/220px-Dhole_face.jpg" width="150"/></td>
+<td><img src="results/images/breeds/dhole.jpg" width="150"/></td>
 <td>34.1%</td>
 </tr>
 <tr>
 <td>🦓 <b>Zebra</b></td>
 <td><img src="https://images.unsplash.com/photo-1501706362039-c06b2d715385?w=150" width="150"/></td>
 <td><b>African Hunting Dog</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/African_Wild_Dog.jpg/220px-African_Wild_Dog.jpg" width="150"/></td>
+<td><img src="results/images/breeds/african_hunting_dog.jpg" width="150"/></td>
 <td>32.8%</td>
 </tr>
 <tr>
 <td>🐻 <b>Bear</b></td>
 <td><img src="https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=150" width="150"/></td>
 <td><b>Newfoundland</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Newfoundland_dog_Smoky.jpg/220px-Newfoundland_dog_Smoky.jpg" width="150"/></td>
+<td><img src="results/images/breeds/newfoundland.jpg" width="150"/></td>
 <td>30.1%</td>
 </tr>
 <tr>
 <td>🐱 <b>Cat</b></td>
 <td><img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150" width="150"/></td>
 <td><b>Siberian Husky</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Black-Magic-Big-Boy.jpg/220px-Black-Magic-Big-Boy.jpg" width="150"/></td>
+<td><img src="results/images/breeds/siberian_husky.jpg" width="150"/></td>
 <td>26.5%</td>
 </tr>
 <tr>
 <td>🐰 <b>Rabbit</b></td>
 <td><img src="https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=150" width="150"/></td>
 <td><b>Dhole</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Dhole_face.jpg/220px-Dhole_face.jpg" width="150"/></td>
+<td><img src="results/images/breeds/dhole.jpg" width="150"/></td>
 <td>18.3%</td>
 </tr>
 </table>
@@ -707,70 +707,70 @@ flowchart LR
 <td><b>Person 09</b></td>
 <td><img src="https://images.unsplash.com/photo-1552058544-f2b08422138a?w=120" width="120"/></td>
 <td><b>Bouvier des Flandres</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bouvier_des_Flandres.jpg/220px-Bouvier_des_Flandres.jpg" width="120"/></td>
+<td><img src="results/images/breeds/bouvier_des_flandres.jpg" width="120"/></td>
 <td><b>99.4%!!</b></td>
 </tr>
 <tr>
 <td>Person 12</td>
 <td><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120" width="120"/></td>
 <td><b>Weimaraner</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Weimaraner_wb.jpg/220px-Weimaraner_wb.jpg" width="120"/></td>
+<td><img src="results/images/breeds/weimaraner.jpg" width="120"/></td>
 <td><b>80.2%</b></td>
 </tr>
 <tr>
 <td>Person 17</td>
 <td><img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=120" width="120"/></td>
 <td><b>Bouvier des Flandres</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bouvier_des_Flandres.jpg/220px-Bouvier_des_Flandres.jpg" width="120"/></td>
+<td><img src="results/images/breeds/bouvier_des_flandres.jpg" width="120"/></td>
 <td><b>73.5%</b></td>
 </tr>
 <tr>
 <td>Person 10</td>
 <td><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=120" width="120"/></td>
 <td><b>Weimaraner</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Weimaraner_wb.jpg/220px-Weimaraner_wb.jpg" width="120"/></td>
+<td><img src="results/images/breeds/weimaraner.jpg" width="120"/></td>
 <td>65.4%</td>
 </tr>
 <tr>
 <td>Person 07</td>
 <td><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120" width="120"/></td>
 <td><b>Bouvier des Flandres</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bouvier_des_Flandres.jpg/220px-Bouvier_des_Flandres.jpg" width="120"/></td>
+<td><img src="results/images/breeds/bouvier_des_flandres.jpg" width="120"/></td>
 <td>59.0%</td>
 </tr>
 <tr>
 <td>Person 04</td>
 <td><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120" width="120"/></td>
 <td><b>Weimaraner</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Weimaraner_wb.jpg/220px-Weimaraner_wb.jpg" width="120"/></td>
+<td><img src="results/images/breeds/weimaraner.jpg" width="120"/></td>
 <td>57.9%</td>
 </tr>
 <tr>
 <td>Person 08</td>
 <td><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120" width="120"/></td>
 <td><b>Miniature Pinscher</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Miniature_Pinscher.jpg/220px-Miniature_Pinscher.jpg" width="120"/></td>
+<td><img src="results/images/breeds/miniature_pinscher.jpg" width="120"/></td>
 <td>52.4%</td>
 </tr>
 <tr>
 <td>Person 03</td>
 <td><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120" width="120"/></td>
 <td><b>Miniature Pinscher</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Miniature_Pinscher.jpg/220px-Miniature_Pinscher.jpg" width="120"/></td>
+<td><img src="results/images/breeds/miniature_pinscher.jpg" width="120"/></td>
 <td>50.1%</td>
 </tr>
 <tr>
 <td>Person 18</td>
 <td><img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=120" width="120"/></td>
 <td><b>Afghan Hound</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Afghan_Hound.jpg/220px-Afghan_Hound.jpg" width="120"/></td>
+<td><img src="results/images/breeds/afghan_hound.jpg" width="120"/></td>
 <td>37.1%</td>
 </tr>
 <tr>
 <td>Person 02</td>
 <td><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120" width="120"/></td>
 <td><b>Saluki</b></td>
-<td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Saluki_dog_breed.jpg/220px-Saluki_dog_breed.jpg" width="120"/></td>
+<td><img src="results/images/breeds/saluki.jpg" width="120"/></td>
 <td>39.0%</td>
 </tr>
 </table>
