@@ -579,69 +579,69 @@ flowchart LR
 <tr>
 <td>🐺 <b>Wolf</b></td>
 <td><img src="results/images/animals/wolf.jpg" width="150"/></td>
-<td><b>African Hunting Dog</b></td>
-<td><img src="results/images/breeds/african_hunting_dog.jpg" width="150"/></td>
-<td><b>98.4%!!</b></td>
+<td><b>Eskimo Dog</b></td>
+<td><img src="results/images/breeds/eskimo_dog.jpg" width="150"/></td>
+<td><b>11.6%</b></td>
 </tr>
 <tr>
 <td>🐴 <b>Horse</b></td>
-<td><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=150" width="150"/></td>
+<td><img src="results/images/animals/horse.jpg" width="150"/></td>
 <td><b>Whippet</b></td>
 <td><img src="results/images/breeds/whippet.jpg" width="150"/></td>
 <td><b>60.4%</b></td>
 </tr>
 <tr>
 <td>🫏 <b>Donkey</b></td>
-<td><img src="https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=150" width="150"/></td>
-<td><b>Standard Poodle</b></td>
-<td><img src="results/images/breeds/standard_poodle.jpg" width="150"/></td>
-<td><b>59.0%</b></td>
+<td><img src="results/images/animals/donkey.jpg" width="150"/></td>
+<td><b>Saluki</b></td>
+<td><img src="results/images/breeds/saluki.jpg" width="150"/></td>
+<td>7.0%</td>
 </tr>
 <tr>
 <td>🦁 <b>Lion</b></td>
-<td><img src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=150" width="150"/></td>
+<td><img src="results/images/animals/lion.jpg" width="150"/></td>
 <td><b>Chow Chow</b></td>
 <td><img src="results/images/breeds/chow_chow.jpg" width="150"/></td>
 <td><b>55.1%</b></td>
 </tr>
 <tr>
 <td>🐄 <b>Cow</b></td>
-<td><img src="https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=150" width="150"/></td>
+<td><img src="results/images/animals/cow.jpg" width="150"/></td>
 <td><b>Whippet</b></td>
 <td><img src="results/images/breeds/whippet.jpg" width="150"/></td>
 <td>48.2%</td>
 </tr>
 <tr>
 <td>🦊 <b>Fox</b></td>
-<td><img src="https://images.unsplash.com/photo-1516934024742-b461fba47600?w=150" width="150"/></td>
+<td><img src="results/images/animals/fox.jpg" width="150"/></td>
 <td><b>Dhole</b></td>
 <td><img src="results/images/breeds/dhole.jpg" width="150"/></td>
 <td>34.1%</td>
 </tr>
 <tr>
 <td>🦓 <b>Zebra</b></td>
-<td><img src="https://images.unsplash.com/photo-1501706362039-c06b2d715385?w=150" width="150"/></td>
+<td><img src="results/images/animals/zebra.jpg" width="150"/></td>
 <td><b>African Hunting Dog</b></td>
 <td><img src="results/images/breeds/african_hunting_dog.jpg" width="150"/></td>
 <td>32.8%</td>
 </tr>
 <tr>
 <td>🐻 <b>Bear</b></td>
-<td><img src="https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=150" width="150"/></td>
+<td><img src="results/images/animals/bear.jpg" width="150"/></td>
 <td><b>Newfoundland</b></td>
 <td><img src="results/images/breeds/newfoundland.jpg" width="150"/></td>
 <td>30.1%</td>
 </tr>
 <tr>
 <td>🐱 <b>Cat</b></td>
-<td><img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150" width="150"/></td>
+<td><img src="results/images/animals/cat.jpg" width="150"/></td>
 <td><b>Siberian Husky</b></td>
 <td><img src="results/images/breeds/siberian_husky.jpg" width="150"/></td>
 <td>26.5%</td>
 </tr>
 <tr>
 <td>🐰 <b>Rabbit</b></td>
-<td><img src="https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=150" width="150"/></td>
+<td><img src="results/images/animals/rabbit.jpg" width="150"/></td>
 <td><b>Dhole</b></td>
 <td><img src="results/images/breeds/dhole.jpg" width="150"/></td>
 <td>18.3%</td>
@@ -652,15 +652,15 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    subgraph Wild["🐺 Wild Canines → Wild Dog Breeds (highest confidence!)"]
-        W["🐺 Wolf → African Hunting Dog 98.4%!!"]
-        F["🦊 Fox → Dhole 34.1%"]
+    subgraph Wild["🐺 Wild Canines → Wild Dog Breeds"]
+        W["🐺 Wolf → Eskimo Dog 11.6%<br/>Thick fur, pointed ears, snowy habitat"]
+        F["🦊 Fox → Dhole 34.1%<br/>Wild canine — close match!"]
         Z["🦓 Zebra → African Hunting Dog 32.8%"]
     end
 
     subgraph Shape["🐴 Body Shape Matching"]
         H["🐴 Horse → Whippet 60.4%<br/>Both athletic, slender, long-legged"]
-        D["🫏 Donkey → Standard Poodle 59.0%"]
+        D["🫏 Donkey → Saluki 7.0%<br/>Long face, slender proportions"]
         Co["🐄 Cow → Whippet 48.2%"]
     end
 
@@ -674,11 +674,13 @@ flowchart TD
     style Fur fill:#fff3e0
 ```
 
-**Wolf → African Hunting Dog at 98.4%!!** The fully-trained model is EXTREMELY confident that a wolf looks like an African Hunting Dog — because they're both wild canines with similar features. This is the CNN's most impressive prediction.
+**Horse → Whippet at 60.4%** — both are athletic, slender, long-legged. The model learned body shape!
 
-**Horse → Whippet at 60.4%** — both are athletic, slender, long-legged. The model learned body shape, not just fur.
+**Lion → Chow Chow at 55.1%** — the lion's mane maps to the Chow Chow's famously fluffy fur.
 
-**Lion → Chow Chow at 55.1%** — the lion's mane maps to the Chow Chow's famously fluffy fur. Brilliant feature matching!
+**Wolf → Eskimo Dog at 11.6%** — the CNN matches the wolf's thick fur and pointed ears to a cold-weather breed. Lower confidence shows the model knows this isn't quite a dog.
+
+**Fox → Dhole at 34.1%** — a Dhole IS a wild canine, so the CNN correctly identified the closest relative!
 
 ---
 
@@ -884,10 +886,11 @@ flowchart TD
 
 ### What Surprised Us
 
-- **Wolf → African Hunting Dog at 98.4%!!** — the CNN almost perfectly identified the wolf as a wild canine
-- **Person 09 → Bouvier des Flandres at 99.4%** — strongest human-dog match ever
 - **Horse → Whippet at 60.4%** — body shape dominates over fur texture
 - **Lion → Chow Chow at 55.1%** — the mane maps to the Chow's fluffy fur
+- **Fox → Dhole at 34.1%** — the CNN found the actual wild canine relative
+- **Wolf → Eskimo Dog** — thick fur and snowy habitat link wolves to cold-weather breeds
+- **Person 09 → Bouvier des Flandres at 99.4%** — strongest human-dog match
 - **MobileNet (2.4M) beats VGG-16 (138M)** — 58× fewer params, higher accuracy
 - **ResNet-50 achieves 97.9% Top-5** — almost always has the right answer in its top 5
 
