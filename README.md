@@ -4,6 +4,18 @@
 
 **Course:** Deep Learning & AI | **Instructor:** Dr. Yoram Segal | **Author:** Hadar Wayne
 
+```mermaid
+graph LR
+    A[🖼️ Input Image] --> B[🧠 CNN Model]
+    B --> C{Which breed?}
+    C --> D[🐕 Golden Retriever 59%]
+    C --> E[🐕 Labrador 27%]
+    C --> F[🐕 Cocker Spaniel 14%]
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style D fill:#c8e6c9
+```
+
 ---
 
 ## 📋 Table of Contents
@@ -24,14 +36,24 @@
 
 ## 🎯 What This Project Does
 
-Imagine you show a computer a photo and it tells you: *"That's a Golden Retriever!"* (or one of 119 other breeds). That's what we built.
+```mermaid
+flowchart TD
+    subgraph Phase1["📊 Phase 1: Train"]
+        A[Kaggle Dataset<br/>10,222 dog images<br/>120 breeds] --> B[Train 6 CNN<br/>Architectures]
+        B --> C[Compare<br/>Performance]
+    end
 
-**But we went way further:**
+    subgraph Phase2["🔬 Phase 2: Experiment"]
+        D[🦁 10 Animal Types] --> E[Feed through<br/>trained model]
+        F[🧑 20 Human Faces] --> E
+        E --> G[Which dog breed<br/>does it predict?]
+    end
 
-1. We trained **6 different AI architectures** and compared them
-2. We used **transfer learning** (borrowing knowledge from pre-trained models)
-3. We tested the AI on **animals that aren't dogs** (horses, zebras, cats...)
-4. We tested it on **human faces** to see which dog breed they "resemble"
+    Phase1 --> Phase2
+
+    style Phase1 fill:#e3f2fd,stroke:#1976d2
+    style Phase2 fill:#fce4ec,stroke:#c62828
+```
 
 ### Quick Stats
 
@@ -39,560 +61,674 @@ Imagine you show a computer a photo and it tells you: *"That's a Golden Retrieve
 |--------|-------|
 | Dog breeds classified | **120** |
 | Training images | **8,127** |
-| Validation images | **2,095** |
 | Architectures compared | **6** |
-| Transfer learning stages | **3** per model |
-| Best accuracy (ResNet-50) | **67.1%** (10% data) / **~85%+** (full, pending) |
-| Top-5 accuracy (ResNet-50) | **95.8%** |
+| Best accuracy (ResNet-50) | **67.1%** top-1 / **95.8%** top-5 |
+| Animal types tested | **10** |
+| Human faces tested | **20** |
 
 ---
 
 ## 🧠 CNN Fundamentals — How Computers "See" Images
 
-### What is a Neural Network?
+### The Big Picture
 
-Think of it like a **digital brain**. Just like your brain has billions of neurons connected to each other, a neural network has layers of mathematical "neurons" that pass information forward.
+```mermaid
+flowchart LR
+    subgraph Input
+        A[📷 Photo<br/>224×224 pixels]
+    end
 
+    subgraph CNN["🧠 Convolutional Neural Network"]
+        B[Conv Layer 1<br/>Finds edges] --> C[Conv Layer 2<br/>Finds shapes]
+        C --> D[Conv Layer 3<br/>Finds patterns]
+        D --> E[Fully Connected<br/>Makes decision]
+    end
+
+    subgraph Output
+        F[🐕 Golden Retriever<br/>59% confidence]
+    end
+
+    Input --> CNN --> Output
+
+    style A fill:#e1f5fe
+    style B fill:#fff9c4
+    style C fill:#ffe0b2
+    style D fill:#ffccbc
+    style E fill:#f3e5f5
+    style F fill:#c8e6c9
 ```
-Photo of a dog  →  [Layer 1]  →  [Layer 2]  →  ...  →  [Final Layer]  →  "Golden Retriever!"
-                    (edges)      (shapes)              (breed features)    (answer)
+
+### What Each Layer Learns
+
+```mermaid
+flowchart LR
+    L1["Layer 1<br/>━━ ╱ ╲<br/>Edges & Lines"] --> L2["Layer 2<br/>◯ △ □<br/>Shapes & Corners"]
+    L2 --> L3["Layer 3<br/>👁️ 👃 👂<br/>Eyes, Nose, Ears"]
+    L3 --> L4["Layer 4<br/>🐕<br/>Whole Face"]
+    L4 --> L5["Output<br/>Golden Retriever!"]
+
+    style L1 fill:#ffebee
+    style L2 fill:#fff3e0
+    style L3 fill:#e8f5e9
+    style L4 fill:#e3f2fd
+    style L5 fill:#f3e5f5
 ```
-
-**Key idea:** Each layer learns something more complex than the previous one.
-
-### What Makes a CNN Special?
-
-**CNN = Convolutional Neural Network** — a type of neural network specifically designed for images.
-
-A regular neural network looks at every pixel individually (like reading a book letter by letter). A CNN is smarter — it looks at **groups of nearby pixels** together (like reading words and sentences). This is why CNNs are so good with images.
 
 ### Convolution — The Core Operation
 
-Imagine you have a small **magnifying glass** (called a **kernel** or **filter**, usually 3x3 pixels). You slide it across the entire image, one position at a time. At each position, you multiply the pixel values by the filter values and add them up. This creates a new image called a **feature map**.
+A small **filter** (3×3) slides across the image, detecting patterns at every position:
 
-```
-  Original Image (5x5)        Filter (3x3)         Feature Map
-  ┌───┬───┬───┬───┬───┐      ┌───┬───┬───┐        "I found
-  │ 0 │ 0 │ 1 │ 1 │ 1 │      │-1 │-1 │-1 │         vertical
-  ├───┼───┼───┼───┼───┤  ×   ├───┼───┼───┤   =     edges!"
-  │ 0 │ 0 │ 1 │ 1 │ 1 │      │ 0 │ 0 │ 0 │
-  ├───┼───┼───┼───┼───┤      ├───┼───┼───┤
-  │ 0 │ 0 │ 1 │ 1 │ 1 │      │ 1 │ 1 │ 1 │
-  └───┴───┴───┴───┴───┘      └───┴───┴───┘
+```mermaid
+flowchart LR
+    A["🖼️ Image<br/>(224×224)"] -->|"Slide 3×3 filter"| B["🔍 Feature Map<br/>(edges detected!)"]
+    B -->|"Another filter"| C["🔍 Feature Map<br/>(corners detected!)"]
+    C -->|"Another filter"| D["🔍 Feature Map<br/>(textures detected!)"]
 
-  The filter slides across the image like a scanner,
-  detecting patterns at every position.
+    style A fill:#e1f5fe
+    style B fill:#fff9c4
+    style C fill:#ffe0b2
+    style D fill:#ffccbc
 ```
 
-**The magic:** The network **learns** which filters to use! Early layers learn to detect simple patterns (edges, corners). Deeper layers combine these into complex patterns (eyes, ears, fur textures).
+**Key idea:** The network LEARNS which filters to use. It discovers by itself that edges, textures, and shapes are important!
 
-### Pooling — Shrinking While Keeping the Important Stuff
+### Pooling — Shrinking While Keeping Important Info
 
-After detecting patterns, we **shrink** the image to keep only the strongest signals. **Max Pooling** takes the maximum value from each small region:
+```mermaid
+flowchart LR
+    A["Feature Map<br/>28×28"] -->|"Max Pooling<br/>2×2"| B["Smaller Map<br/>14×14"]
+    B -->|"Max Pooling<br/>2×2"| C["Even Smaller<br/>7×7"]
 
-```
-  Before (4x4)              After Max Pooling (2x2)
-  ┌────┬────┬────┬────┐     ┌────┬────┐
-  │  1 │  3 │  5 │  7 │     │  4 │  8 │   ← Kept the biggest
-  │  2 │  4 │  6 │  8 │ →   ├────┼────┤     value from each
-  │  9 │ 11 │ 13 │ 15 │     │ 12 │ 16 │     2×2 region
-  │ 10 │ 12 │ 14 │ 16 │     └────┴────┘
-  └────┴────┴────┴────┘
+    style A fill:#e8eaf6
+    style B fill:#c5cae9
+    style C fill:#9fa8da
 ```
 
-**Why?** Makes the network faster and helps it recognize objects regardless of their exact position in the image.
+Takes the **maximum value** from each 2×2 region → image gets smaller but keeps the strongest features.
 
-### ReLU — The On/Off Switch
+### Activation Functions
 
-**ReLU (Rectified Linear Unit)** is the most common activation function. Simple rule: **keep positive values, replace negatives with zero.**
+```mermaid
+flowchart TD
+    subgraph ReLU["ReLU: Keep positives, zero out negatives"]
+        R1["Input: -2, 5, -1, 3, -4, 7"] --> R2["Output: 0, 5, 0, 3, 0, 7"]
+    end
 
-```
-  Input:   [-2,  5, -1,  3, -4,  7]
-  After ReLU: [ 0,  5,  0,  3,  0,  7]
-```
+    subgraph Softmax["Softmax: Raw scores → Percentages"]
+        S1["Scores: 2.0, 1.0, 0.5"] --> S2["Probs: 59%, 27%, 14%<br/>(adds to 100%)"]
+    end
 
-**Why it matters:** Without activation functions, stacking layers is pointless — mathematically it collapses to a single layer. ReLU introduces non-linearity, letting the network learn complex curved decision boundaries.
-
-### Softmax — Turning Numbers into Percentages
-
-The final layer outputs raw scores for each breed. **Softmax** converts these into probabilities that add up to 100%:
-
-```
-  Raw scores:    [2.0,   1.0,   0.5,   0.1,  ...]    (120 numbers)
-                   ↓      ↓      ↓      ↓
-  After Softmax: [59%,   27%,   10%,    4%,  ...]    (adds to 100%)
-                   ↓
-  Prediction: "59% sure it's a Golden Retriever"
+    style ReLU fill:#e8f5e9
+    style Softmax fill:#fff3e0
 ```
 
-### Loss Function — How Wrong Are We?
+### How the Network Learns
 
-The **Cross-Entropy Loss** measures how far the model's prediction is from the correct answer:
-- Model says 90% Golden Retriever and it IS a Golden Retriever → **low loss** (good!)
-- Model says 10% Golden Retriever and it IS a Golden Retriever → **high loss** (bad!)
+```mermaid
+flowchart LR
+    A[🖼️ Image] -->|"Forward Pass"| B[🧠 Network]
+    B --> C[Prediction:<br/>Poodle 80%]
+    C --> D{Compare with<br/>true label}
+    D -->|"Actually: Beagle"| E[📉 Calculate Loss<br/>How wrong?]
+    E -->|"Backward Pass"| F[🔧 Adjust Weights]
+    F -->|"Next image"| A
 
-**Goal of training: minimize the loss.**
-
-### Backpropagation — Learning From Mistakes
-
-After each prediction, the network:
-1. **Checks** how wrong it was (calculates loss)
-2. **Traces back** through every layer to find which weights caused the error
-3. **Adjusts** those weights slightly in the right direction
-4. **Repeats** thousands of times
-
-```
-  Forward pass:  Image → Layers → Prediction → Loss
-                                                  ↓
-  Backward pass: Adjust weights ← Gradients ← Loss
-                 (learning!)      (blame assignment)
+    style E fill:#ffcdd2
+    style F fill:#c8e6c9
 ```
 
-It's like a student who takes a test, checks the answers, and studies the topics they got wrong. Over many tests (epochs), they improve.
+This loop repeats thousands of times. Each cycle, the network gets slightly better.
 
-### What is an Epoch?
+### Overfitting vs Good Learning
 
-One **epoch** = the model has seen every training image once. We train for 10-15 epochs, like re-reading a textbook multiple times.
+```mermaid
+flowchart TD
+    subgraph Good["✅ Good Learning"]
+        G1[Sees many<br/>dog variations] --> G2[Learns general<br/>patterns]
+        G2 --> G3[Works on<br/>new images!]
+    end
 
-### Overfitting — Memorizing vs Understanding
+    subgraph Bad["❌ Overfitting"]
+        B1[Memorizes<br/>training images] --> B2[Gets 99% on<br/>training data]
+        B2 --> B3[Fails on<br/>new images!]
+    end
 
-If you study by memorizing answers word-for-word, you'll ace the practice test but fail the real exam. Neural networks can do the same thing — **memorize** the training images instead of learning general patterns.
+    subgraph Fix["🔧 Solutions"]
+        F1[Dropout<br/>Turn off random neurons]
+        F2[Data Augmentation<br/>Flip, rotate, zoom]
+        F3[Early Stopping<br/>Stop when val drops]
+    end
 
+    Bad --> Fix
+
+    style Good fill:#c8e6c9
+    style Bad fill:#ffcdd2
+    style Fix fill:#fff9c4
 ```
-  Training accuracy keeps going up  📈
-  Validation accuracy stops or drops 📉  ← OVERFITTING!
-```
-
-**Solutions we use:**
-- **Dropout** — randomly turn off 50% of neurons during training (forces the network to not rely on any single neuron)
-- **Data Augmentation** — flip, rotate, zoom, change brightness of images (creates variety)
-- **Early Stopping** — stop training when validation accuracy stops improving
-
-### Data Augmentation — Creating Variety
-
-One image of a dog becomes many:
-
-```
-  Original    →  Flipped    →  Rotated    →  Brighter   →  Zoomed
-  🐕           🐕(mirror)    🐕(tilted)    🐕(light)     🐕(close-up)
-```
-
-This helps the model learn that a dog is a dog regardless of angle, lighting, or position.
 
 ---
 
 ## 🏗️ The 6 Architectures We Compared
 
-We trained 6 different CNN architectures, each representing a milestone in deep learning history.
+### Architecture Evolution Timeline
 
-### Architecture Timeline
-
-```
-  1998          2012          2014          2014          2015          2018
-   │             │             │             │             │             │
-   ▼             ▼             ▼             ▼             ▼             ▼
-  LeNet      AlexNet        VGG-16     GoogLeNet     ResNet-50     MobileNet
-  (first)    (GPU+ReLU)    (3×3 only)  (parallel)   (skip conn.)  (mobile)
-  60K params  57M params   138M params   5M params    25M params   3.4M params
-```
-
----
-
-### 1. Simple CNN (Our Baseline)
-
-**What:** A basic CNN we built from scratch — no pre-trained knowledge.
-**Analogy:** A student taking an exam on day one of school, with zero preparation.
-
-```
-  Input Image (224×224×3)
-       │
-       ▼
-  ┌─────────────────────┐
-  │ Conv 3×3 (32 filters)│ → BatchNorm → ReLU → MaxPool
-  └─────────┬───────────┘
-            ▼
-  ┌─────────────────────┐
-  │ Conv 3×3 (64 filters)│ → BatchNorm → ReLU → MaxPool
-  └─────────┬───────────┘
-            ▼
-  ┌─────────────────────┐
-  │ Conv 3×3(128 filters)│ → BatchNorm → ReLU → MaxPool
-  └─────────┬───────────┘
-            ▼
-  Global Average Pooling → Dense(512) → Dropout → Dense(120) → Softmax
-                                                        │
-                                                   "golden_retriever"
+```mermaid
+timeline
+    title CNN Architecture Evolution
+    1998 : LeNet-5
+         : First practical CNN
+         : 60K parameters
+    2012 : AlexNet
+         : ReLU + Dropout + GPU
+         : 57M parameters
+         : Won ImageNet by huge margin
+    2014 : VGG-16
+         : Only 3×3 filters
+         : 138M parameters
+         : Depth with simplicity
+    2014 : GoogLeNet / Inception
+         : Parallel filter paths
+         : 5M parameters
+         : 25× fewer params than VGG!
+    2015 : ResNet-50
+         : Skip connections
+         : 25M parameters
+         : Solved vanishing gradients
+    2018 : MobileNet v2
+         : Depthwise separable conv
+         : 3.4M parameters
+         : Designed for phones
 ```
 
-**Parameters:** 221,304 | **Our accuracy:** 1.4% (basically random guessing with 120 breeds!)
+### 1. Simple CNN — Our Baseline
 
----
+```mermaid
+flowchart TD
+    A["📷 Input<br/>224×224×3"] --> B["Conv 3×3 → BN → ReLU → MaxPool<br/>32 filters"]
+    B --> C["Conv 3×3 → BN → ReLU → MaxPool<br/>64 filters"]
+    C --> D["Conv 3×3 → BN → ReLU → MaxPool<br/>128 filters"]
+    D --> E["Global Average Pooling"]
+    E --> F["Dense 512 → ReLU → Dropout 50%"]
+    F --> G["Dense 120 → Softmax"]
+    G --> H["🐕 Prediction"]
 
-### 2. AlexNet (2012) — The Deep Learning Revolution
-
-**What:** The architecture that proved deep learning works. Won ImageNet 2012 by a huge margin.
-**Key Innovation:** First to use ReLU (instead of slow sigmoid) and Dropout for regularization.
-**Analogy:** The first car that proved engines are faster than horses.
-
-**Parameters:** 57.5M | **Our accuracy:** 26.6% (Stage 3) | **Top-5:** 56.6%
-
----
-
-### 3. VGG-16 (2014) — Deep and Simple
-
-**What:** 16 layers using ONLY 3×3 filters. Proved that going deeper with small filters beats using large filters.
-**Key Innovation:** Uniform architecture — just stack 3×3 convolutions and max pooling.
-**Analogy:** Instead of climbing a wall in one big jump, take many small steps on a ladder.
-
-```
-  VGG-16:
-  [3×3 Conv]×2 → Pool → [3×3 Conv]×2 → Pool → [3×3 Conv]×3 → Pool →
-  [3×3 Conv]×3 → Pool → [3×3 Conv]×3 → Pool → FC → FC → Softmax
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
 ```
 
-**Insight:** Two stacked 3×3 filters see the same area as one 5×5 filter, but with fewer parameters and more non-linearity.
+**221K params** | Accuracy: **1.4%** (random guessing!) | Built from scratch, no pre-trained knowledge.
 
-**Parameters:** 138M (largest!) | **Our accuracy:** 69.6% (Colab, Stage 3)
+### 2. AlexNet (2012)
 
----
+**The architecture that started the deep learning revolution.** First to use ReLU and Dropout, trained on GPUs.
 
-### 4. GoogLeNet / Inception (2014) — Do Everything At Once
+**57M params** | Accuracy: **26.6%** | Like the first car that proved engines beat horses.
 
-**What:** Instead of choosing one filter size, use ALL sizes in parallel!
-**Key Innovation:** The Inception module — parallel 1×1, 3×3, 5×5 convolutions + pooling.
-**Analogy:** Instead of choosing one tool, use a Swiss Army knife.
+### 3. VGG-16 (2014)
 
-```
-                     Input
-              ┌────┬───┬───┬────┐
-              │    │   │   │    │
-            [1×1][1×1][1×1][Pool]
-              │    │   │   │
-              │  [3×3][5×5] │
-              │    │   │   │
-              └────┴───┴───┘
-                  Concatenate
-                     │
-                   Output
-```
+**Deep and simple — 16 layers using ONLY 3×3 filters.** Proved that going deeper with small filters works better than using large filters.
 
-**The trick:** 1×1 convolutions reduce dimensions first (bottleneck), making 3×3 and 5×5 operations much cheaper.
+```mermaid
+flowchart LR
+    A["Input"] --> B["[3×3]×2<br/>Pool"]
+    B --> C["[3×3]×2<br/>Pool"]
+    C --> D["[3×3]×3<br/>Pool"]
+    D --> E["[3×3]×3<br/>Pool"]
+    E --> F["[3×3]×3<br/>Pool"]
+    F --> G["FC×3"]
+    G --> H["120 breeds"]
 
-**Parameters:** 25M (5× fewer than VGG!) | **Our accuracy:** Pending (Colab running)
-
----
-
-### 5. ResNet-50 (2015) — Skip Connections Solve Everything
-
-**What:** 50 layers with "shortcut" connections that skip over layers.
-**Key Innovation:** Residual learning — instead of learning the full transformation, learn only the **difference** (residual).
-**Analogy:** Taking an elevator shortcut instead of climbing every staircase in a 50-story building.
-
-```
-        Input (x)
-          │
-     ┌────┴────┐
-     │         │
-  [Conv 1×1]   │
-  [Conv 3×3]   │  ← The "residual" path (learns the difference)
-  [Conv 1×1]   │
-     │         │
-     └────┬────┘
-          │
-       x + F(x)     ← Skip connection adds input directly!
-          │
-        Output
-
-  Formula: H(x) = F(x) + x
-
-  Instead of learning H(x) from scratch,
-  just learn F(x) = H(x) - x (the residual).
-  If nothing needs to change, F(x) = 0 is easy to learn.
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
 ```
 
-**Why it works:** In very deep networks, gradients become tiny as they flow backward (**vanishing gradients**). The skip connection lets gradients flow directly through, enabling 50+ layer networks.
+**138M params** (largest!) | Accuracy: **69.6%** (Colab) | Insight: Two 3×3 filters = one 5×5, but fewer parameters.
 
-**Parameters:** 25M | **Our accuracy:** 67.1% (10% data) | **Top-5:** 95.8%
+### 4. GoogLeNet / Inception (2014)
 
----
+**Instead of choosing one filter size, use ALL sizes in parallel!**
 
-### 6. MobileNet v2 (2018) — Speed for Phones
+```mermaid
+flowchart TD
+    A["Input"] --> B1["1×1 Conv"]
+    A --> B2["1×1 Conv"]
+    A --> B3["1×1 Conv"]
+    A --> B4["MaxPool"]
+    B2 --> C2["3×3 Conv"]
+    B3 --> C3["5×5 Conv"]
+    B4 --> C4["1×1 Conv"]
+    B1 --> D["Concatenate All"]
+    C2 --> D
+    C3 --> D
+    C4 --> D
+    D --> E["Output"]
 
-**What:** Designed for mobile devices — fast inference with minimal parameters.
-**Key Innovation:** Depthwise separable convolutions — split convolution into two cheaper operations.
-**Analogy:** Instead of a powerful but heavy truck, a lightweight electric scooter that still gets the job done.
+    style A fill:#e1f5fe
+    style D fill:#fff3e0
+    style E fill:#c8e6c9
+```
 
-**Regular convolution:** One filter processes ALL channels at every position (expensive).
-**Depthwise separable:** First process each channel separately (depthwise), then combine (pointwise). Same result, ~8× fewer computations!
+**25M params** (5× fewer than VGG!) | Uses 1×1 convolutions to reduce dimensions before expensive operations.
 
-**Parameters:** 2.4M (smallest!) | **Our accuracy:** 35.7% (10% data) | **Top-5:** 69.2%
+### 5. ResNet-50 (2015) — The Winner
+
+**Skip connections solve the vanishing gradient problem**, enabling 50+ layer networks.
+
+```mermaid
+flowchart TD
+    A["Input (x)"] --> B["Conv 1×1"]
+    B --> C["Conv 3×3"]
+    C --> D["Conv 1×1"]
+    A -->|"Skip Connection<br/>(shortcut!)"| E["➕ Add"]
+    D --> E
+    E --> F["Output = F(x) + x"]
+
+    style A fill:#e1f5fe
+    style E fill:#fff9c4
+    style F fill:#c8e6c9
+```
+
+**25M params** | Accuracy: **67.1%** (10% data) / **95.8% top-5** | The skip connection lets gradients flow directly, solving vanishing gradients.
+
+### 6. MobileNet v2 (2018)
+
+**Designed for mobile devices** — splits expensive convolution into two cheap operations:
+
+```mermaid
+flowchart LR
+    subgraph Regular["Regular Conv (expensive)"]
+        R1["All channels<br/>at once"] --> R2["One output"]
+    end
+
+    subgraph Depthwise["Depthwise Separable (cheap)"]
+        D1["Each channel<br/>separately"] --> D2["Combine<br/>channels"]
+        D2 --> D3["Output"]
+    end
+
+    style Regular fill:#ffcdd2
+    style Depthwise fill:#c8e6c9
+```
+
+**2.4M params** (smallest!) | Accuracy: **35.7%** | Same result, ~8× fewer computations!
 
 ---
 
 ## 📊 Architecture Comparison
 
-### Historical Overview
+```mermaid
+xychart-beta
+    title "Model Accuracy Comparison (10% data)"
+    x-axis ["Simple CNN", "AlexNet", "MobileNet", "ResNet-50"]
+    y-axis "Top-1 Accuracy (%)" 0 --> 70
+    bar [1.4, 26.6, 35.7, 67.1]
+```
 
-| Year | Architecture | Layers | Parameters | Key Innovation | ImageNet Error |
-|------|-------------|--------|-----------|----------------|---------------|
-| 1998 | LeNet-5 | 5 | 60K | First practical CNN | — |
-| 2012 | **AlexNet** | 8 | 57M | ReLU, Dropout, GPU | 16.4% |
-| 2014 | **VGG-16** | 16 | 138M | Only 3×3 filters | 7.3% |
-| 2014 | **Inception** | 22 | 5M | Parallel paths | 6.7% |
-| 2015 | **ResNet-50** | 50 | 25M | Skip connections | 3.6% |
-| 2018 | **MobileNet** | — | 3.4M | Depthwise separable | 5.6% |
+### Full Results Table
 
-### Our Results
+| Model | Top-1 Acc | Top-5 Acc | Parameters | Training Time | Year |
+|:------|:---------:|:---------:|:----------:|:------------:|:----:|
+| Simple CNN | 1.4% | 7.0% | 221K | 4 min | — |
+| AlexNet | 26.6% | 56.6% | 57M | 16 min | 2012 |
+| MobileNet | 35.7% | 69.2% | 2.4M | 8 min | 2018 |
+| **ResNet-50** | **67.1%** | **95.8%** | **25M** | **25 min** | **2015** |
+| VGG-16 | 69.6% | — | 138M | *Colab* | 2014 |
+| Inception | *pending* | — | 25M | *Colab* | 2014 |
 
-> **Preliminary results** from 10% data subset (761 training images, 3 epochs per stage, CPU). Full results from Colab training on 100% data will be updated below.
+### Charts
 
-| Model | Top-1 Accuracy | Top-5 Accuracy | Parameters | Training Time |
-|-------|:-------------:|:--------------:|:----------:|:------------:|
-| Simple CNN | 1.4% | 7.0% | 221K | 4 min |
-| AlexNet | 26.6% | 56.6% | 57M | 16 min |
-| **MobileNet** | **35.7%** | **69.2%** | **2.4M** | 8 min |
-| **ResNet-50** | **67.1%** | **95.8%** | **25M** | 25 min |
+| Accuracy vs Epochs | Loss vs Epochs |
+|:--:|:--:|
+| ![Accuracy](results/graphs/accuracy_comparison.png) | ![Loss](results/graphs/loss_comparison.png) |
 
-> VGG-16 and Inception results from full Colab training (100% data):
-
-| Model | Top-1 Accuracy | Status |
-|-------|:-------------:|:------:|
-| VGG-16 | 69.6% | Done (Colab) |
-| Inception | Training... | In progress |
-
-### Accuracy Comparison Chart
-
-![Accuracy Comparison](results/graphs/accuracy_comparison.png)
-
-### Architecture Comparison Chart
-
-![Architecture Comparison](results/graphs/architecture_comparison.png)
-
-### Class Distribution
-
-The dataset is well-balanced: 52-100 images per breed, mean of 67.7.
-
-![Class Distribution](results/graphs/class_distribution.png)
+| Architecture Bar Chart | Class Distribution |
+|:--:|:--:|
+| ![Comparison](results/graphs/architecture_comparison.png) | ![Classes](results/graphs/class_distribution.png) |
 
 ---
 
 ## 🔄 Transfer Learning — Teaching an Old Model New Tricks
 
-### What is Transfer Learning?
+### Why Transfer Learning?
 
-Imagine you already know how to **ride a bicycle**. Learning to ride a **motorcycle** is much easier than learning from zero — you already understand balance, steering, and road awareness. You just need to learn the throttle and gears.
+```mermaid
+flowchart LR
+    subgraph Scratch["❌ From Scratch"]
+        S1["Random weights"] --> S2["8K dog images"]
+        S2 --> S3["1.4% accuracy"]
+    end
 
-Transfer learning works the same way:
-1. Start with a model pre-trained on **ImageNet** (1.2 million images, 1000 categories)
-2. It already knows edges, textures, shapes, and objects
-3. Just teach it the new part: **which dog breed is this?**
+    subgraph TL["✅ Transfer Learning"]
+        T1["ImageNet weights<br/>1.2M images learned"] --> T2["8K dog images"]
+        T2 --> T3["67.1% accuracy"]
+    end
 
-### Why Not Train From Scratch?
-
-| Approach | Accuracy | Difference |
-|----------|:--------:|:----------:|
-| Simple CNN (from scratch) | 1.4% | Baseline |
-| ResNet-50 (transfer learning) | 67.1% | **48× better!** |
-
-With only ~8,000 training images and 120 classes, training from scratch simply doesn't have enough data to learn visual features from zero.
+    style Scratch fill:#ffcdd2
+    style TL fill:#c8e6c9
+    style S3 fill:#ef9a9a
+    style T3 fill:#a5d6a7
+```
 
 ### The 3 Stages
 
+```mermaid
+flowchart TD
+    subgraph S1["Stage 1: Feature Extraction"]
+        direction TB
+        A1["❄️ FROZEN<br/>ImageNet backbone<br/>(edges, textures, shapes)"]
+        A2["🔥 TRAINABLE<br/>New classifier only"]
+        A1 --- A2
+        A3["LR = 0.001"]
+    end
+
+    subgraph S2["Stage 2: Partial Fine-Tuning"]
+        direction TB
+        B1["❄️ FROZEN<br/>Early layers<br/>(basic features)"]
+        B2["🔥 UNFROZEN<br/>Top 25% layers"]
+        B3["🔥 TRAINABLE<br/>Classifier"]
+        B1 --- B2 --- B3
+        B4["LR = 0.0001"]
+    end
+
+    subgraph S3["Stage 3: Full Fine-Tuning"]
+        direction TB
+        C1["🔥 UNFROZEN<br/>All layers<br/>(everything re-tuned)"]
+        C2["🔥 TRAINABLE<br/>Classifier"]
+        C1 --- C2
+        C3["LR = 0.00001"]
+    end
+
+    S1 -->|"Unfreeze top 25%"| S2 -->|"Unfreeze all"| S3
+
+    style S1 fill:#e3f2fd
+    style S2 fill:#fff3e0
+    style S3 fill:#fce4ec
 ```
-  STAGE 1: Feature Extraction       STAGE 2: Partial Fine-Tuning    STAGE 3: Full Fine-Tuning
-  ┌─────────────────────┐           ┌─────────────────────┐         ┌─────────────────────┐
-  │    FROZEN ❄️         │           │    FROZEN ❄️         │         │    UNFROZEN 🔥       │
-  │  (ImageNet weights)  │           │  (early layers)      │         │  (all layers)        │
-  │  Edge detectors      │           │  Edge detectors      │         │  Everything re-tuned │
-  │  Texture recognizers │           ├─────────────────────┤         │  with very small LR  │
-  │  Shape detectors     │           │    UNFROZEN 🔥       │         │                      │
-  ├─────────────────────┤           │  (top 25% layers)    │         │  Risk: overfitting!  │
-  │    TRAINABLE 🔥      │           ├─────────────────────┤         ├─────────────────────┤
-  │  New breed classifier│           │    TRAINABLE 🔥      │         │    TRAINABLE 🔥      │
-  └─────────────────────┘           │  Breed classifier    │         │  Breed classifier    │
-  LR = 0.001                        └─────────────────────┘         └─────────────────────┘
-                                    LR = 0.0001                      LR = 0.00001
+
+### Stage Results
+
+```mermaid
+xychart-beta
+    title "Transfer Learning Stages — Accuracy per Model"
+    x-axis ["AlexNet S1", "AlexNet S2", "AlexNet S3", "MobileNet S1", "MobileNet S2", "MobileNet S3", "ResNet S1", "ResNet S2", "ResNet S3"]
+    y-axis "Accuracy (%)" 0 --> 70
+    bar [17.5, 25.2, 26.6, 24.5, 35.7, 35.7, 49.0, 65.7, 67.1]
 ```
 
-### Transfer Learning Results
+![Transfer Learning Stages Chart](results/graphs/transfer_learning_stages.png)
 
-| Model | Stage 1 (Frozen) | Stage 2 (Partial) | Stage 3 (Full) | Best Stage |
-|-------|:-------:|:-------:|:-------:|:----------:|
-| AlexNet | 17.5% | 25.2% | **26.6%** | Stage 3 |
-| MobileNet | 24.5% | **35.7%** | 35.7% | Stage 2 |
-| ResNet-50 | 49.0% | 65.7% | **67.1%** | Stage 3 |
-
-![Transfer Learning Stages](results/graphs/transfer_learning_stages.png)
-
-**Key insight:** Stage 2 and 3 consistently improve over Stage 1. The model needs to adapt its feature detectors to dog-specific patterns, not just rely on general ImageNet features.
+**Key insight:** Stage 1 (frozen backbone) already gives strong results because ImageNet features transfer well to dog breeds. Stages 2-3 improve by adapting features specifically for dogs.
 
 ---
 
 ## 📈 Results & Analysis
 
-### What Do These Numbers Mean?
+### What Does Top-5 Mean?
 
-- **Top-1 Accuracy:** The model's #1 guess is correct
-- **Top-5 Accuracy:** The correct answer is somewhere in the model's top 5 guesses
-- ResNet-50's **95.8% Top-5** means it almost always has the right breed in its top 5!
+```mermaid
+flowchart LR
+    A["🐕 Photo of<br/>a Beagle"] --> B["🧠 ResNet-50"]
+    B --> C["Top 5 Guesses"]
+    C --> D["1. Beagle 45% ✅"]
+    C --> E["2. Foxhound 20%"]
+    C --> F["3. Basset 15%"]
+    C --> G["4. Harrier 10%"]
+    C --> H["5. Bluetick 5%"]
+
+    style D fill:#c8e6c9
+```
+
+ResNet-50's **95.8% Top-5** means the correct breed is in the top 5 guesses 96 times out of 100!
 
 ### Why ResNet-50 Wins
 
-1. **Skip connections** let gradients flow freely → trains better
-2. **50 layers** can learn very fine-grained features (fur texture differences)
-3. **25M parameters** — sweet spot between too few (can't learn) and too many (overfits)
+```mermaid
+flowchart TD
+    A["Skip Connections"] --> D["Best Accuracy"]
+    B["50 Layers<br/>Fine-grained features"] --> D
+    C["25M Params<br/>Sweet spot"] --> D
 
-### Why MobileNet Beats AlexNet Despite Being 24× Smaller
+    style D fill:#c8e6c9
+```
 
-| | AlexNet | MobileNet |
-|--|---------|-----------|
-| Params | 57M | 2.4M |
-| Accuracy | 26.6% | 35.7% |
-| Design year | 2012 | 2018 |
+### Why MobileNet Beats AlexNet (24× Smaller!)
 
-MobileNet uses **depthwise separable convolutions** — a more efficient way to process images. Six years of research produced architectures that are both smaller AND more accurate.
+```mermaid
+flowchart LR
+    subgraph Alex["AlexNet (2012)"]
+        A1["57M params"]
+        A2["26.6% accuracy"]
+    end
+
+    subgraph Mobile["MobileNet (2018)"]
+        M1["2.4M params"]
+        M2["35.7% accuracy"]
+    end
+
+    Alex ---|"6 years of research"| Mobile
+
+    style Alex fill:#ffcdd2
+    style Mobile fill:#c8e6c9
+```
+
+Smarter architecture design (depthwise separable convolutions) beats brute force size.
 
 ---
 
 ## 🦁 Experiment: What Dog Breed Is This Animal?
 
-We fed images of 10 non-dog animals through our trained ResNet-50 and asked: *"What dog breed is this?"*
+We fed 10 non-dog animals through our dog breed model. It HAS to pick a dog breed — revealing what visual features the CNN learned!
 
-The model was trained ONLY on dog breeds, so it has to pick the closest match from 120 dog breeds. The results reveal what visual features the CNN actually learned!
+```mermaid
+flowchart LR
+    A["🐴 Horse Photo"] --> B["🧠 ResNet-50<br/>(trained on dogs only)"]
+    B --> C["🐕 Saluki 39.2%"]
 
-| Animal | Predicted Dog Breed | Confidence | Why It Makes Sense |
-|:------:|:------------------:|:----------:|:-------------------|
-| 🐻 Bear | **Collie** | 10.4% | Fluffy fur, similar face shape |
-| 🐱 Cat | **Pomeranian** | 8.9% | Small face, fluffy fur, pointed ears |
-| 🐄 Cow | **English Foxhound** | 8.1% | Spotted pattern, similar body build |
-| 🫏 Donkey | **English Foxhound** | 2.3% | Long face, similar proportions |
-| 🦊 Fox | **Dingo** | 7.3% | Wild canine! Very similar features |
-| 🐴 Horse | **Saluki** | 39.2% | Long legs, slender build, elegant posture |
-| 🦁 Lion | **Dhole** | 4.9% | Wild canine face shape, tawny color |
-| 🐰 Rabbit | **Pomeranian** | 3.2% | Small, fluffy, round face |
-| 🐺 Wolf | **African Hunting Dog** | 3.7% | Wild canine — closest real match! |
-| 🦓 Zebra | **German Short-haired Pointer** | 3.6% | Pattern recognition, spotted coat |
+    style A fill:#fff3e0
+    style C fill:#e8f5e9
+```
 
-### Key Observations
+### Results
 
-- **Fox → Dingo:** The CNN correctly identified the fox as closest to a wild canine. Impressive!
-- **Horse → Saluki (39.2%!):** The highest confidence non-dog prediction. Salukis are tall, slender, elegant — just like horses. The CNN learned body shape, not just fur.
-- **Wolf → African Hunting Dog:** Another wild canine match — the CNN sees the family resemblance!
-- **Confidence is lower** for non-dogs (2-39%) vs real dogs (typically 50-90%), showing the model "knows" these aren't really dogs.
+| | Animal | Predicted Dog Breed | Confidence | Why It Makes Sense |
+|:-:|:------:|:------------------:|:----------:|:-------------------|
+| 🐻 | **Bear** | Collie | 10.4% | Fluffy fur, similar face shape |
+| 🐱 | **Cat** | Pomeranian | 8.9% | Small face, fluffy, pointed ears |
+| 🐄 | **Cow** | English Foxhound | 8.1% | Spotted pattern, similar build |
+| 🫏 | **Donkey** | English Foxhound | 2.3% | Long face, similar proportions |
+| 🦊 | **Fox** | Dingo | 7.3% | Wild canine! Very similar features |
+| 🐴 | **Horse** | Saluki | **39.2%** | Long legs, slender, elegant posture |
+| 🦁 | **Lion** | Dhole | 4.9% | Wild canine face, tawny color |
+| 🐰 | **Rabbit** | Pomeranian | 3.2% | Small, fluffy, round face |
+| 🐺 | **Wolf** | African Hunting Dog | 3.7% | Wild canine — closest match! |
+| 🦓 | **Zebra** | German Pointer | 3.6% | Pattern recognition |
+
+### Analysis
+
+```mermaid
+flowchart TD
+    subgraph Wild["Wild Canines → Wild Dog Breeds"]
+        F["🦊 Fox → Dingo"]
+        W["🐺 Wolf → African Hunting Dog"]
+        L["🦁 Lion → Dhole"]
+    end
+
+    subgraph Shape["Body Shape Matching"]
+        H["🐴 Horse → Saluki (39%!)<br/>Both tall, slender, elegant"]
+    end
+
+    subgraph Fur["Fur Texture Matching"]
+        B["🐻 Bear → Collie (fluffy)"]
+        C["🐱 Cat → Pomeranian (fluffy)"]
+        R["🐰 Rabbit → Pomeranian (fluffy)"]
+    end
+
+    style Wild fill:#e8f5e9
+    style Shape fill:#e3f2fd
+    style Fur fill:#fff3e0
+```
+
+**Horse → Saluki at 39.2%** is the highest-confidence non-dog prediction. The CNN learned that Salukis and horses share a slender, long-legged body shape — not just fur patterns!
 
 ---
 
 ## 🧑‍🤝‍🧑 Experiment: Which Dog Breed Are You?
 
-We fed 20 human face photos through the dog breed model. Remember: the model has NEVER seen a human face — it can only pick from 120 dog breeds!
+We fed 20 human faces through the model. It has NEVER seen a human — it must pick from 120 dog breeds!
+
+```mermaid
+flowchart LR
+    A["🧑 Human Face"] --> B["🧠 ResNet-50"]
+    B --> C["🐩 Toy Poodle 5.8%"]
+    B --> D["🐕 Italian Greyhound 4.3%"]
+    B --> E["🐩 Mini Poodle 2.7%"]
+
+    style A fill:#fce4ec
+    style C fill:#e8f5e9
+```
+
+### Results
 
 | Person | Predicted Breed | Confidence | 2nd Choice | 3rd Choice |
 |:------:|:--------------:|:----------:|:----------:|:----------:|
-| Person 01 | **Toy Poodle** | 5.8% | Italian Greyhound | Miniature Poodle |
-| Person 02 | **Toy Poodle** | 4.5% | Staffordshire Bull Terrier | Italian Greyhound |
-| Person 03 | **Toy Poodle** | 3.7% | Italian Greyhound | Staffordshire Bull Terrier |
-| Person 04 | **Toy Poodle** | 6.6% | Brittany Spaniel | Weimaraner |
-| Person 05 | **Toy Poodle** | 4.2% | Italian Greyhound | Gordon Setter |
-| Person 06 | **Toy Poodle** | 5.5% | Brittany Spaniel | Weimaraner |
-| Person 07 | **Toy Poodle** | 5.9% | Sussex Spaniel | Miniature Poodle |
-| Person 08 | **Toy Poodle** | 6.1% | Italian Greyhound | Pug |
-| **Person 09** | **Affenpinscher** | **17.5%** | Lhasa Apso | Miniature Poodle |
-| Person 10 | **Toy Poodle** | 4.2% | Weimaraner | Brittany Spaniel |
+| Person 01 | Toy Poodle | 5.8% | Italian Greyhound | Mini Poodle |
+| Person 02 | Toy Poodle | 4.5% | Staffy Bull Terrier | Italian Greyhound |
+| Person 03 | Toy Poodle | 3.7% | Italian Greyhound | Staffy Bull Terrier |
+| Person 04 | Toy Poodle | 6.6% | Brittany Spaniel | Weimaraner |
+| Person 05 | Toy Poodle | 4.2% | Italian Greyhound | Gordon Setter |
+| Person 06 | Toy Poodle | 5.5% | Brittany Spaniel | Weimaraner |
+| Person 07 | Toy Poodle | 5.9% | Sussex Spaniel | Mini Poodle |
+| Person 08 | Toy Poodle | 6.1% | Italian Greyhound | Pug |
+| **Person 09** | **Affenpinscher** | **17.5%** | Lhasa Apso | Mini Poodle |
+| Person 10 | Toy Poodle | 4.2% | Weimaraner | Brittany Spaniel |
 | **Person 11** | **Italian Greyhound** | **20.2%** | Komondor | Gordon Setter |
-| **Person 12** | **Komondor** | **20.3%** | Staffordshire Bull Terrier | Gordon Setter |
-| Person 13 | **Italian Greyhound** | 6.0% | Gordon Setter | Toy Poodle |
-| Person 14 | **Staffordshire Bull Terrier** | 4.7% | Toy Poodle | Chihuahua |
-| Person 15 | **Chihuahua** | 7.3% | Staffordshire Bull Terrier | Pug |
-| Person 16 | **Italian Greyhound** | 5.3% | Toy Poodle | Lhasa Apso |
-| Person 17 | **Toy Poodle** | 10.7% | Miniature Poodle | Italian Greyhound |
-| Person 18 | **Toy Poodle** | 5.4% | Italian Greyhound | Staffordshire Bull Terrier |
-| Person 19 | **Toy Poodle** | 6.9% | Sussex Spaniel | Komondor |
-| Person 20 | **Italian Greyhound** | 8.0% | Miniature Poodle | Toy Poodle |
+| **Person 12** | **Komondor** | **20.3%** | Staffy Bull Terrier | Gordon Setter |
+| Person 13 | Italian Greyhound | 6.0% | Gordon Setter | Toy Poodle |
+| Person 14 | Staffy Bull Terrier | 4.7% | Toy Poodle | Chihuahua |
+| Person 15 | Chihuahua | 7.3% | Staffy Bull Terrier | Pug |
+| Person 16 | Italian Greyhound | 5.3% | Toy Poodle | Lhasa Apso |
+| Person 17 | Toy Poodle | 10.7% | Mini Poodle | Italian Greyhound |
+| Person 18 | Toy Poodle | 5.4% | Italian Greyhound | Staffy Bull Terrier |
+| Person 19 | Toy Poodle | 6.9% | Sussex Spaniel | Komondor |
+| Person 20 | Italian Greyhound | 8.0% | Mini Poodle | Toy Poodle |
 
 ### Most Interesting Matches
 
-**Person 09 → Affenpinscher (17.5%)** — The Affenpinscher is literally called the "Monkey Dog" because of its human-like face! The CNN detected the similarity.
+```mermaid
+flowchart TD
+    subgraph Match1["Person 09 → Affenpinscher (17.5%)"]
+        M1A["The Affenpinscher is literally<br/>called the 'Monkey Dog' because<br/>of its human-like face!"]
+    end
 
-**Person 12 → Komondor (20.3%)** — The Komondor has long, corded white hair resembling dreadlocks. This person likely has long or curly hair.
+    subgraph Match2["Person 12 → Komondor (20.3%)"]
+        M2A["The Komondor has long corded hair<br/>like dreadlocks — person likely<br/>has long/curly hair"]
+    end
 
-**Person 11 → Italian Greyhound (20.2%)** — Slim facial features, elegant proportions — the CNN maps these to the slender Italian Greyhound.
+    subgraph Match3["Person 11 → Italian Greyhound (20.2%)"]
+        M3A["Slim facial features map to<br/>the slender Italian Greyhound"]
+    end
+
+    style Match1 fill:#fff3e0
+    style Match2 fill:#e3f2fd
+    style Match3 fill:#fce4ec
+```
 
 ### What the CNN "Sees" in Human Faces
 
-- **Most faces → Toy Poodle:** Curly/wavy hair texture maps to poodle-like fur
-- **Slim faces → Italian Greyhound:** The CNN associates slender features with this elegant breed
-- **Round faces → Pug/Chihuahua:** Compact facial features trigger these small-breed detectors
-- **Confidence is very low (3-20%):** The model correctly senses these are NOT dogs — it's unsure
+```mermaid
+pie title Most Common "Human" Breeds
+    "Toy Poodle" : 11
+    "Italian Greyhound" : 4
+    "Komondor" : 1
+    "Affenpinscher" : 1
+    "Chihuahua" : 1
+    "Staffy Bull Terrier" : 1
+    "Other" : 1
+```
 
-This reveals that CNNs learn **texture and shape features**, not semantic concepts like "this is a dog" or "this is a human."
+- **Most faces → Toy Poodle:** Curly/wavy hair texture maps to poodle fur
+- **Slim faces → Italian Greyhound:** Slender features match this elegant breed
+- **Round faces → Pug/Chihuahua:** Compact features trigger small-breed detectors
+- **Confidence is very low (3-20%):** The model senses these are NOT dogs
 
 ---
 
 ## 💡 Insights & Conclusions
 
-### What We Learned
+### Key Takeaways
 
-1. **Transfer learning is essential** for small datasets. Without it, accuracy is near random (1.4% vs 67.1%).
+```mermaid
+flowchart TD
+    I1["1️⃣ Transfer learning is essential<br/>1.4% → 67.1% (48× better!)"] --> C["🎓 Deep Learning<br/>Lessons"]
+    I2["2️⃣ Architecture > Size<br/>MobileNet 2.4M beats AlexNet 57M"] --> C
+    I3["3️⃣ Skip connections are transformative<br/>ResNet enables 50+ layers"] --> C
+    I4["4️⃣ CNNs learn features, not concepts<br/>Horse = Saluki (body shape)"] --> C
+    I5["5️⃣ Top-5 is the real metric<br/>95.8% — almost always in top 5"] --> C
 
-2. **Architecture innovation matters more than brute force.** MobileNet (2.4M params, 35.7%) beats AlexNet (57M params, 26.6%) — proving that clever design outperforms raw size.
+    style C fill:#e8f5e9
+    style I1 fill:#e3f2fd
+    style I2 fill:#fff3e0
+    style I3 fill:#fce4ec
+    style I4 fill:#f3e5f5
+    style I5 fill:#e0f2f1
+```
 
-3. **ResNet's skip connections are transformative.** They enabled training 50-layer networks where previous architectures would fail from vanishing gradients.
+### Architecture Recommendation Guide
 
-4. **Top-5 accuracy is the real story.** ResNet-50's 95.8% means the correct breed is almost always in the model's top 5 guesses. Many "mistakes" are between visually similar breeds.
+```mermaid
+flowchart TD
+    Q["What do you need?"] --> A["Best accuracy?"]
+    Q --> B["Mobile/edge device?"]
+    Q --> C["Learning CNNs?"]
+    Q --> D["Research baseline?"]
 
-5. **CNNs learn features, not concepts.** The animal and celebrity experiments show the model matches based on visual texture and shape, not understanding what a "dog" is.
+    A --> A1["✅ ResNet-50<br/>Skip connections"]
+    B --> B1["✅ MobileNet<br/>3.4M params, fast"]
+    C --> C1["✅ Simple CNN<br/>Build from scratch"]
+    D --> D1["✅ VGG-16<br/>Simple, well-understood"]
+
+    style A1 fill:#c8e6c9
+    style B1 fill:#c8e6c9
+    style C1 fill:#c8e6c9
+    style D1 fill:#c8e6c9
+```
 
 ### What Surprised Us
 
-- A horse is a Saluki (39.2% confidence!) — the slender, long-legged body shape
-- A fox is a Dingo (7.3%) — the CNN found the closest wild canine relative
-- Most human faces are "Toy Poodles" — curly hair texture dominates the prediction
-- MobileNet, designed for phones, beats AlexNet, designed for GPUs
-
-### Limitations
-
-- 10% data subset gives preliminary results — full Colab training will be more accurate
-- 120 classes with ~80 images each is challenging — some breeds look nearly identical
-- Celebrity experiment uses stock photos, not actual celebrities (for copyright reasons)
-- The model can only choose from 120 breeds — it can't say "this is not a dog"
-
-### What Architecture Would We Recommend?
-
-| Scenario | Best Choice | Why |
-|----------|-------------|-----|
-| **Best accuracy** | ResNet-50 | Skip connections enable deep learning |
-| **Mobile app** | MobileNet | 10× fewer params, fast inference |
-| **Learning CNNs** | Simple CNN | Build from scratch, understand every layer |
-| **Research baseline** | VGG-16 | Simple, well-understood, widely cited |
+- A horse is a Saluki (39.2% confidence!) — body shape dominates
+- A fox is a Dingo — the CNN found wild canine relatives
+- Most human faces are "Toy Poodles" — curly hair texture dominates
+- MobileNet (designed for phones) beats AlexNet (designed for GPUs)
+- ResNet-50's Top-5 of 95.8% — almost always right in its top 5
 
 ---
 
 ## 🚀 How to Run This Project
 
-### Option A: Google Colab (Recommended — GPU)
+```mermaid
+flowchart TD
+    A{Choose Environment} --> B["☁️ Google Colab<br/>(recommended)"]
+    A --> C["🐧 WSL/Linux<br/>(local CPU)"]
+    A --> D["🪟 Windows<br/>(PowerShell)"]
 
-1. Open the [Colab Notebook](https://colab.research.google.com)
-2. Upload `notebooks/dog_breed_classifier.ipynb`
-3. Runtime → Change runtime type → **A100 GPU**
-4. Run all cells (~1-2 hours)
+    B --> B1["Upload notebook<br/>A100 GPU<br/>Run All<br/>~1-2 hours"]
+    C --> C1["uv venv<br/>pip install<br/>python run_training.py<br/>~3-4 hours (CPU)"]
+    D --> D1["uv venv<br/>.venv\\Scripts\\activate<br/>python run_training.py"]
 
-### Option B: WSL / Local (CPU, 10% data)
+    style B fill:#c8e6c9
+    style B1 fill:#e8f5e9
+```
+
+### Option A: Google Colab (Recommended)
+
+1. Upload `notebooks/dog_breed_classifier.ipynb` to Colab
+2. Runtime → Change runtime type → **A100 GPU**
+3. Run all 15 cells in order
+
+### Option B: WSL / Local
 
 ```bash
 cd /mnt/c/2025AIDEV/L41
 uv venv && source .venv/bin/activate
-uv pip install -r requirements.txt
-python -m src.data.download
-python -m src.data.organize
-python run_training.py
-```
-
-### Option C: Windows PowerShell
-
-```powershell
-cd C:\2025AIDEV\L41
-uv venv
-.venv\Scripts\activate
 uv pip install -r requirements.txt
 python run_training.py
 ```
@@ -601,59 +737,51 @@ python run_training.py
 
 ## 📁 Project Structure
 
-```
-L41/
-├── src/
-│   ├── config.py               # All settings and paths
-│   ├── data/                   # Data pipeline
-│   │   ├── download.py         # Kaggle dataset download
-│   │   ├── organize.py         # Organize into breed folders
-│   │   ├── augmentation.py     # Image transforms
-│   │   ├── dataset.py          # PyTorch DataLoader
-│   │   └── analysis.py         # Dataset statistics
-│   ├── models/                 # 6 CNN architectures
-│   │   ├── simple_cnn.py       # Custom baseline (221K params)
-│   │   ├── alexnet.py          # AlexNet 2012 (57M params)
-│   │   ├── vgg.py              # VGG-16 2014 (138M params)
-│   │   ├── inception.py        # GoogLeNet 2014 (25M params)
-│   │   ├── resnet.py           # ResNet-50 2015 (25M params)
-│   │   └── mobilenet.py        # MobileNet 2018 (2.4M params)
-│   ├── training/               # Training infrastructure
-│   │   ├── trainer.py          # Training loop + early stopping
-│   │   ├── transfer_learning.py # 3-stage TL pipeline
-│   │   └── evaluate.py         # Metrics + confusion matrix
-│   ├── inference/
-│   │   └── predict.py          # predict_dog_breed() function
-│   ├── experiments/            # Animal & celebrity experiments
-│   └── visualization/          # Plots, galleries
-├── notebooks/
-│   └── dog_breed_classifier.ipynb  # 15-cell Colab notebook
-├── data/                       # Dataset (gitignored)
-├── results/
-│   ├── graphs/                 # All plots (committed)
-│   ├── tables/                 # CSV results
-│   └── models/                 # Saved weights (gitignored)
-├── docs/
-│   ├── PRD.md                  # Product Requirements
-│   └── tasks.json              # 68 tasks, 12 phases
-├── run_training.py             # Main training script
-├── requirements.txt
-└── README.md                   # This file
+```mermaid
+flowchart TD
+    subgraph SRC["src/"]
+        direction TB
+        CFG["config.py<br/>Settings & paths"]
+        DATA["data/<br/>Download, organize<br/>augment, load"]
+        MODELS["models/<br/>6 CNN architectures"]
+        TRAIN["training/<br/>Train loop, TL,<br/>evaluation"]
+        INF["inference/<br/>predict_dog_breed()"]
+        EXP["experiments/<br/>Animals & celebrities"]
+        VIZ["visualization/<br/>Plots & galleries"]
+    end
+
+    subgraph OUT["results/"]
+        GRAPHS["graphs/<br/>5 PNG charts"]
+        TABLES["tables/<br/>CSV results"]
+        WEIGHTS["models/<br/>.pth weights"]
+    end
+
+    subgraph DOCS["docs/"]
+        PRD["PRD.md"]
+        TASKS["tasks.json<br/>68 tasks"]
+    end
+
+    NB["notebooks/<br/>Colab notebook<br/>15 cells"]
+    README["README.md<br/>This file!"]
+
+    style SRC fill:#e3f2fd
+    style OUT fill:#e8f5e9
+    style DOCS fill:#fff3e0
 ```
 
 ---
 
 ## 📚 References
 
-- **AlexNet:** Krizhevsky et al., "ImageNet Classification with Deep Convolutional Neural Networks" (2012)
-- **VGG:** Simonyan & Zisserman, "Very Deep Convolutional Networks for Large-Scale Image Recognition" (2014)
+- **AlexNet:** Krizhevsky et al., "ImageNet Classification with Deep CNNs" (2012)
+- **VGG:** Simonyan & Zisserman, "Very Deep Convolutional Networks" (2014)
 - **GoogLeNet:** Szegedy et al., "Going Deeper with Convolutions" (2014)
 - **ResNet:** He et al., "Deep Residual Learning for Image Recognition" (2015)
-- **MobileNet:** Sandler et al., "MobileNetV2: Inverted Residuals and Linear Bottlenecks" (2018)
+- **MobileNet:** Sandler et al., "MobileNetV2: Inverted Residuals" (2018)
 - **Dataset:** [Kaggle Dog Breed Identification](https://www.kaggle.com/c/dog-breed-identification)
 
 ---
 
-*This README will be updated with final Colab results when full GPU training completes.*
+*This README will be updated with final Colab GPU results when training completes.*
 
-*Built with PyTorch, trained on Kaggle Dog Breed Identification dataset (120 breeds, ~10K images).*
+*Built with PyTorch | Trained on 120 dog breeds | 6 architectures compared*
