@@ -328,7 +328,7 @@ flowchart TD
     style F fill:#c8e6c9
 ```
 
-**25M params** | Accuracy: **67.1%** (10% data, pending full Colab) / **95.8% top-5** | The skip connection lets gradients flow directly, solving vanishing gradients.
+**25M params** | Accuracy: **83.9%** (full data) | The skip connection lets gradients flow directly, solving vanishing gradients.
 
 ### 6. MobileNet v2 (2018)
 
@@ -357,27 +357,27 @@ flowchart LR
 
 ```mermaid
 xychart-beta
-    title "Model Accuracy Comparison"
-    x-axis ["Simple CNN", "AlexNet", "MobileNet", "ResNet-50*", "VGG-16", "Inception"]
+    title "Model Accuracy Comparison (Full Data, Colab A100)"
+    x-axis ["Simple CNN", "AlexNet", "MobileNet*", "VGG-16", "ResNet-50", "Inception"]
     y-axis "Top-1 Accuracy (%)" 0 --> 90
-    bar [4.8, 49.8, 35.7, 67.1, 69.6, 86.3]
+    bar [4.8, 49.8, 35.7, 69.6, 83.9, 86.3]
 ```
 
-> *Simple CNN, AlexNet, VGG-16, Inception: full data (Colab A100). MobileNet, ResNet-50: 10% data (pending full run).*
+> *MobileNet: 10% data only (pending full run). All others: full data on Colab A100.*
 
 ### Full Results Table
 
-| Model | Top-1 Acc | Top-5 Acc | Parameters | Training Time | Data | Year |
-|:------|:---------:|:---------:|:----------:|:------------:|:----:|:----:|
-| Simple CNN | 4.8% | — | 221K | 64 min | Full | — |
-| AlexNet | 49.8% | — | 57M | 28 min | Full | 2012 |
-| MobileNet | 35.7% | 69.2% | 2.4M | 8 min | 10% | 2018 |
-| ResNet-50 | 67.1% | 95.8% | 25M | 25 min | 10% | 2015 |
-| VGG-16 | 69.6% | — | 138M | 29 min | Full | 2014 |
-| **Inception** | **86.3%** | **—** | **25M** | **106 min** | **Full** | **2014** |
+| Model | Top-1 Acc | Parameters | Training Time | Data | Year |
+|:------|:---------:|:----------:|:------------:|:----:|:----:|
+| Simple CNN | 4.8% | 221K | 64 min | Full | — |
+| AlexNet | 49.8% | 57M | 28 min | Full | 2012 |
+| MobileNet* | 35.7% | 2.4M | 8 min | 10% | 2018 |
+| VGG-16 | 69.6% | 138M | 29 min | Full | 2014 |
+| ResNet-50 | 83.9% | 25M | 50 min | Full | 2015 |
+| **Inception** | **86.3%** | **25M** | **106 min** | **Full** | **2014** |
 
-> ResNet-50 and MobileNet results are from 10% data (CPU). Full Colab results pending.
-> Inception is the current leader at **86.3%** on full data with A100 GPU!
+> *MobileNet on 10% data (pending full run). All others: full data, Colab A100.*
+> **Inception leads at 86.3%, followed closely by ResNet-50 at 83.9%!**
 
 ### Charts
 
@@ -455,26 +455,28 @@ flowchart TD
 |:------|:-------:|:-------:|:-------:|:----:|
 | AlexNet | 45.1% | 47.6% | **49.8%** | S3 |
 | VGG-16 | 48.1% | 66.2% | **69.6%** | S3 |
+| ResNet-50 | **83.5%** | 82.0% | **83.9%** | S3 |
 | **Inception** | 80.4% | 82.8% | **86.3%** | **S3** |
 | MobileNet* | 24.5% | **35.7%** | 35.7% | S2 |
-| ResNet-50* | 49.0% | 65.7% | **67.1%** | S3 |
 
-> *MobileNet and ResNet-50 are from 10% data. Others are full data (Colab A100).*
+> *MobileNet on 10% data. All others: full data (Colab A100).*
 
 ```mermaid
 xychart-beta
     title "Transfer Learning Stages — Full Data (Colab A100)"
-    x-axis ["AlexNet S1", "AlexNet S2", "AlexNet S3", "VGG S1", "VGG S2", "VGG S3", "Inception S1", "Inception S2", "Inception S3"]
+    x-axis ["Alex S1", "Alex S2", "Alex S3", "VGG S1", "VGG S2", "VGG S3", "ResNet S1", "ResNet S2", "ResNet S3", "Incep S1", "Incep S2", "Incep S3"]
     y-axis "Accuracy (%)" 0 --> 90
-    bar [45.1, 47.6, 49.8, 48.1, 66.2, 69.6, 80.4, 82.8, 86.3]
+    bar [45.1, 47.6, 49.8, 48.1, 66.2, 69.6, 83.5, 82.0, 83.9, 80.4, 82.8, 86.3]
 ```
 
 ![Transfer Learning Stages Chart](results/graphs/transfer_learning_stages.png)
 
 **Key insights:**
-- **Inception Stage 1 already hits 80.4%** — just by training the classifier head! The Inception backbone is incredibly good at feature extraction.
-- **Stage 3 consistently wins** for full-data training — unfreezing all layers allows the model to adapt deeply to dog-specific features.
-- **The jump from VGG Stage 1 (48%) to Stage 2 (66%)** is the largest single improvement — unfreezing the top layers of VGG dramatically helps.
+- **ResNet-50 Stage 1 hits 83.5%** — the strongest frozen backbone! Even without fine-tuning, its features transfer incredibly well.
+- **ResNet-50 Stage 2 actually HURT performance (82.0%)** — partially unfreezing caused overfitting. Stage 3 recovered to 83.9%.
+- **Inception Stage 3 wins overall at 86.3%** — its parallel paths adapted best to dog-specific multi-scale features.
+- **The jump from VGG Stage 1 (48%) to Stage 2 (66%)** is the largest single improvement — VGG's simple architecture benefits most from unfreezing.
+- **Stage 3 wins 4 out of 5 models** — full fine-tuning is best when you have enough data.
 
 ---
 
@@ -520,7 +522,7 @@ flowchart LR
         S1["VGG-16: 138M ❌"]
         S2["AlexNet: 57M"]
         S3["Inception: 25M ✅"]
-        S4["ResNet: 25M"]
+        S4["ResNet-50: 25M ✅"]
         S5["MobileNet: 2.4M"]
     end
 
@@ -529,7 +531,7 @@ flowchart LR
         A1["VGG-16: 69.6%"]
         A2["AlexNet: 49.8%"]
         A3["Inception: 86.3% 🏆"]
-        A4["ResNet: 67.1%*"]
+        A4["ResNet-50: 83.9% 🥈"]
         A5["MobileNet: 35.7%*"]
     end
 
@@ -537,12 +539,17 @@ flowchart LR
 
     style S1 fill:#ffcdd2
     style A3 fill:#c8e6c9
+    style A4 fill:#e8f5e9
     style S3 fill:#c8e6c9
+    style S4 fill:#e8f5e9
 ```
 
-> *ResNet & MobileNet on 10% data — expected to improve significantly with full data.*
+> *MobileNet on 10% data — expected to improve with full data.*
 
-**Key takeaway:** Inception achieves the best accuracy with 5× fewer parameters than VGG-16. Clever architecture (parallel paths + bottlenecks) beats brute force depth.
+**Key takeaways:**
+- **Inception (86.3%) and ResNet-50 (83.9%) are the top two** — both with 25M params
+- VGG-16 has **5× more parameters** (138M) but gets only 69.6% — bigger is NOT better
+- The top two architectures share the same parameter count but use different innovations (parallel paths vs skip connections)
 
 ---
 
